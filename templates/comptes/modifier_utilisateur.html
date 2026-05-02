@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* --- VARIABLES --- */
+    :root {
+        --primary: #0d6efd;
+        --primary-dark: #0a58ca;
+        --success: #10b981;
+        --success-dark: #059669;
+        --gray-light: #f8fafc;
+        --gray-border: #e2e8f0;
+        --text-dark: #0f172a;
+        --text-muted: #475569;
+        --radius-card: 28px;
+        --radius-input: 14px;
+        --radius-btn: 40px;
+        --shadow-md: 0 20px 35px -10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Animation */
+    @keyframes fadeSlideUp {
+        0% { opacity: 0; transform: translateY(25px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Carte */
+    .edit-user-card {
+        border: none;
+        border-radius: var(--radius-card);
+        background: white;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        transition: transform 0.25s ease, box-shadow 0.3s ease;
+    }
+    .edit-user-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.15);
+    }
+    .edit-user-card .card-header {
+        background: linear-gradient(115deg, var(--primary) 0%, var(--primary-dark) 100%);
+        padding: 1.6rem 2rem;
+        border-bottom: none;
+        position: relative;
+        overflow: hidden;
+    }
+    .edit-user-card .card-header::after {
+        content: '';
+        position: absolute;
+        top: -30%;
+        right: -5%;
+        width: 180px;
+        height: 180px;
+        background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .edit-user-card .card-header h4 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: white;
+        position: relative;
+        z-index: 1;
+    }
+    .edit-user-card .card-header .small {
+        font-size: 0.8rem;
+        opacity: 0.9;
+        margin-top: 0.3rem;
+        position: relative;
+        z-index: 1;
+    }
+    .edit-user-card .card-body {
+        padding: 2.2rem 2rem;
+    }
+
+    /* Styles par défaut pour les champs (hors checkbox) */
+    .edit-user-card form p {
+        margin-bottom: 1.6rem;
+    }
+    .edit-user-card label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.8rem;
+        color: var(--text-dark);
+        margin-bottom: 0.45rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .edit-user-card input:not([type="checkbox"]),
+    .edit-user-card select,
+    .edit-user-card textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1.5px solid var(--gray-border);
+        border-radius: var(--radius-input);
+        font-size: 0.95rem;
+        background-color: var(--gray-light);
+        transition: all 0.2s;
+    }
+    .edit-user-card input:not([type="checkbox"]):focus,
+    .edit-user-card select:focus,
+    .edit-user-card textarea:focus {
+        border-color: var(--primary);
+        outline: none;
+        background-color: white;
+        box-shadow: 0 0 0 4px rgba(13,110,253,0.15);
+        transform: scale(1.01);
+    }
+    .edit-user-card select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%230d6efd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1rem;
+        cursor: pointer;
+    }
+    .helptext, .help-text {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+        display: block;
+    }
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0 0;
+        color: #e53e3e;
+        font-size: 0.75rem;
+    }
+    .errorlist li {
+        background: #fef2f2;
+        border-radius: 12px;
+        padding: 0.2rem 0.7rem;
+        display: inline-block;
+    }
+
+    /* --- CORRECTION POUR LES CASES À COCHER (Est valide, Actif) --- */
+    .edit-user-card form p:has(input[type="checkbox"]) {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.8rem !important;
+        flex-wrap: wrap !important;
+        margin-bottom: 1rem !important;
+    }
+    .edit-user-card form p:has(input[type="checkbox"]) label {
+        display: inline !important;
+        width: auto !important;
+        text-transform: none !important;
+        font-weight: 500 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .edit-user-card form p input[type="checkbox"] {
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        transform: none !important;
+        accent-color: #0d6efd;
+        cursor: pointer;
+    }
+
+    /* Boutons */
+    .btn-success {
+        background: linear-gradient(105deg, var(--success) 0%, var(--success-dark) 100%);
+        border: none;
+        border-radius: var(--radius-btn);
+        padding: 0.6rem 1.8rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: white;
+        transition: all 0.25s;
+        box-shadow: 0 2px 6px rgba(16,185,129,0.2);
+    }
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(16,185,129,0.3);
+        background: linear-gradient(105deg, var(--success-dark) 0%, var(--success) 100%);
+    }
+    .btn-secondary {
+        background-color: #f1f5f9;
+        border: 1px solid var(--gray-border);
+        color: var(--text-dark);
+        border-radius: var(--radius-btn);
+        padding: 0.6rem 1.8rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+        background-color: #e6edf5;
+        transform: translateY(-2px);
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .edit-user-card .card-body { padding: 1.5rem; }
+        .d-flex { flex-direction: column; gap: 0.75rem; align-items: stretch !important; }
+        .btn { width: 100%; text-align: center; }
+        .edit-user-card input, .edit-user-card select { font-size: 1rem; }
+    }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card edit-user-card">
+            <div class="card-header">
+                <h4><i class="fas fa-user-edit me-2"></i> Modifier l'utilisateur</h4>
+                <p class="small text-white-50 mb-0">Modifiez les informations du compte</p>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i> Enregistrer
+                        </button>
+                        <a href="{% url 'gestion_utilisateurs' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script pour les listes déroulantes dynamiques (direction → service → division) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const directionSelect = document.getElementById('id_direction');
+    const serviceSelect = document.getElementById('id_service');
+    const divisionSelect = document.getElementById('id_division');
+
+    const currentServiceId = serviceSelect ? serviceSelect.value : null;
+    const currentDivisionId = divisionSelect ? divisionSelect.value : null;
+
+    function updateServices(keepSelected = false) {
+        const directionId = directionSelect ? directionSelect.value : null;
+        if (!serviceSelect) return;
+        serviceSelect.innerHTML = '<option value="">---------</option>';
+        if (divisionSelect) divisionSelect.innerHTML = '<option value="">---------</option>';
+        if (!directionId) return;
+        fetch(`/comptes/api/services/?direction=${directionId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(service => {
+                    const option = document.createElement('option');
+                    option.value = service.id;
+                    option.textContent = service.nom;
+                    serviceSelect.appendChild(option);
+                });
+                if (keepSelected && currentServiceId) {
+                    serviceSelect.value = currentServiceId;
+                    if (divisionSelect && currentDivisionId) updateDivisions(true);
+                }
+            });
+    }
+
+    function updateDivisions(keepSelected = false) {
+        const serviceId = serviceSelect ? serviceSelect.value : null;
+        if (!divisionSelect) return;
+        divisionSelect.innerHTML = '<option value="">---------</option>';
+        if (!serviceId) return;
+        fetch(`/comptes/api/divisions/?service=${serviceId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(division => {
+                    const option = document.createElement('option');
+                    option.value = division.id;
+                    option.textContent = division.nom;
+                    divisionSelect.appendChild(option);
+                });
+                if (keepSelected && currentDivisionId) {
+                    divisionSelect.value = currentDivisionId;
+                }
+            });
+    }
+
+    if (directionSelect) directionSelect.addEventListener('change', () => updateServices(false));
+    if (serviceSelect) serviceSelect.addEventListener('change', () => updateDivisions(false));
+
+    if (directionSelect && directionSelect.value) {
+        updateServices(true);
+    } else if (serviceSelect && serviceSelect.value) {
+        updateDivisions(true);
+    }
+});
+</script>
+{% endblock %}

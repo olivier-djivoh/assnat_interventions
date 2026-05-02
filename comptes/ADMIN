@@ -1,0 +1,79 @@
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.utils import timezone
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.conf import settings
+from .models import Direction, Service, Division, Utilisateur
+from django.core.mail import EmailMultiAlternatives
+
+# Définir l'action en DEHORS de la classe (sans 'self')
+@admin.action(description="Valider les utilisateurs sélectionnés et envoyer lien d'activation")
+def valider_utilisateurs_action(self, request, queryset):
+    """
+    Action personnalisée pour valider les utilisateurs
+    """
+    for user in queryset:
+        if not user.est_valide:
+            user.est_valide = True
+            user.date_validation = timezone.now()
+            user.save()
+            
+            
+
+                # Générer le token et le lien
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            lien = request.build_absolute_uri(f'/comptes/activer/{uid}/{token}/')
+                
+                # Préparer et envoyer l'email
+            sujet = "Activation de votre compte"
+            test_message = f"Bonjour {user.get_full_name()},\n\nActivez votre compte ici: {lien}"
+            html_message = render_to_string('emails/activation.html', {
+                    'user': user, 
+                    'lien': lien
+                })
+                #ENVOI AVEC EmailMultiAlternatives (Pas send_mail)
+            email = EmailMultiAlternatives(
+                sujet,
+                test_message,
+                settings.EMAIL_HOST_USER,
+                [user.email]
+            )
+            email.attach_alternative(html_message, "text/html")
+            email.send()
+    
+    self.message_user(request, f"{queryset.count()} utilisateur(s) validé(s) et email(s) envoyé(s).")
+class UtilisateurAdmin(UserAdmin):
+    list_display = ('username', 'email', 'last_name', 'first_name', 'role', 
+                    'type_contrat', 'direction', 'service', 'division', 
+                    'est_valide', 'is_active') 
+    list_filter = ('est_valide', 'role', 'type_contrat', 'direction', 'service', 'division')
+    
+    fieldsets = UserAdmin.fieldsets + (
+        ('Informations complémentaires', {
+            'fields': ('contact', 'type_contrat', 'direction', 'service', 
+                      'division', 'role', 'est_valide', 'date_validation'),
+        }),    
+    )
+    
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        ('Informations complémentaires', {
+            'fields': ('contact', 'type_contrat', 'direction', 'service', 
+                      'division', 'role'),
+        }), 
+    )
+    
+    # Utiliser l'action définie en dehors
+    actions = [valider_utilisateurs_action]
+    class Media:
+        js = ('admin/js/jquery.init.js',  'js/admin_direct.js',)  # Assurez-vous que ce fichier existe et est correctement référencé
+
+# Enregistrement des modèles
+admin.site.register(Direction)
+admin.site.register(Service)
+admin.site.register(Division)
+admin.site.register(Utilisateur, UtilisateurAdmin)

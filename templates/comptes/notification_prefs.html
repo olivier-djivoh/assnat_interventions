@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4><i class="fas fa-bell"></i> Préférences de notifications</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <a href="{% url 'profil' %}" class="btn btn-secondary">Retour</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

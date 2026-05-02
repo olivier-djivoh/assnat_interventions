@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Animation d'apparition */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card {
+        animation: fadeInUp 0.5s ease-out;
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        padding: 1.5rem;
+        border-bottom: none;
+    }
+
+    .card-header h4 {
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: -0.3px;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Style des champs */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .form-label i {
+        color: #0d6efd;
+        font-size: 1rem;
+    }
+
+    .required-star {
+        color: #dc3545;
+        margin-left: 4px;
+    }
+
+    /* Champs de formulaire modernes */
+    .form-control, select, textarea {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 16px;
+        transition: all 0.3s ease;
+        background-color: #f8fafc;
+        font-size: 0.95rem;
+    }
+
+    .form-control:focus, select:focus, textarea:focus {
+        border-color: #0d6efd;
+        background-color: white;
+        box-shadow: 0 0 0 4px rgba(13,110,253,0.15);
+        outline: none;
+    }
+
+    select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%230d6efd' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px;
+        cursor: pointer;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .form-text {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+    }
+
+    /* Boutons */
+    .btn-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        border: none;
+        padding: 12px 24px;
+        font-weight: 600;
+        border-radius: 40px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(13,110,253,0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(13,110,253,0.3);
+        background: linear-gradient(135deg, #0a58ca 0%, #0d6efd 100%);
+    }
+
+    .btn-secondary {
+        background-color: #e2e8f0;
+        border: none;
+        color: #1e293b;
+        padding: 12px 24px;
+        font-weight: 600;
+        border-radius: 40px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background-color: #cbd5e1;
+        transform: translateY(-2px);
+    }
+
+    /* Barre de progression */
+    .progress-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: #e2e8f0;
+        z-index: 9999;
+        display: none;
+    }
+
+    .progress-bar-custom {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #0d6efd, #0a58ca);
+        transition: width 0.1s linear;
+        border-radius: 0 2px 2px 0;
+    }
+
+    /* Loader sur bouton */
+    .btn-loading {
+        opacity: 0.8;
+        cursor: wait;
+    }
+
+    .spinner-border-sm {
+        vertical-align: middle;
+        margin-right: 8px;
+    }
+
+    /* Alertes personnalisées */
+    .alert-custom {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        min-width: 300px;
+        animation: slideInRight 0.3s ease;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+</style>
+
+<!-- Barre de progression -->
+<div id="progressContainer" class="progress-container">
+    <div id="progressBar" class="progress-bar-custom"></div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0 text-white">
+                    <i class="fas fa-pen-alt me-2"></i> Nouvelle requête
+                </h4>
+                <p class="text-white-50 mb-0 mt-1 small">Décrivez précisément votre besoin</p>
+            </div>
+            <div class="card-body">
+                <form method="post" id="requeteForm">
+                    {% csrf_token %}
+                    
+                    <!-- Type de demande -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-tag"></i> Type de demande
+                            <span class="required-star">*</span>
+                        </label>
+                        {{ form.type_demande }}
+                        {% if form.type_demande.errors %}
+                            <div class="text-danger small mt-1">{{ form.type_demande.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-align-left"></i> Description
+                            <span class="required-star">*</span>
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Localisation -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Localisation
+                        </label>
+                        {{ form.localisation }}
+                        {% if form.localisation.errors %}
+                            <div class="text-danger small mt-1">{{ form.localisation.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i> Facultatif - Précisez le lieu de l'intervention
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" id="submitBtn" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i> Envoyer la requête
+                        </button>
+                        <a href="{% url 'accueil' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('requeteForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    
+    // Fonction pour afficher une alerte personnalisée
+    function showAlert(message, type = 'danger') {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-custom`;
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas ${type === 'danger' ? 'fa-exclamation-triangle' : 'fa-info-circle'} me-2"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => alertDiv.remove(), 4000);
+    }
+    
+    form.addEventListener('submit', function(e) {
+        const typeDemande = document.getElementById('id_type_demande').value;
+        const description = document.getElementById('id_description').value.trim();
+        
+        if (!typeDemande) {
+            e.preventDefault();
+            showAlert('Veuillez sélectionner un type de demande.', 'warning');
+            return false;
+        }
+        
+        if (!description) {
+            e.preventDefault();
+            showAlert('Veuillez décrire votre problème.', 'warning');
+            return false;
+        }
+        
+        // Bloquer l'envoi immédiat
+        e.preventDefault();
+        
+        // Afficher la barre de progression
+        progressContainer.style.display = 'block';
+        
+        // Désactiver le bouton et afficher le loader
+        submitBtn.disabled = true;
+        submitBtn.classList.add('btn-loading');
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Envoi en cours...';
+        
+        let progress = 0;
+        const step = 100 / 50; // 50 pas pour 5 secondes (100ms par pas)
+        
+        const interval = setInterval(function() {
+            progress += step;
+            if (progress < 100) {
+                progressBar.style.width = progress + '%';
+            } else {
+                clearInterval(interval);
+                progressBar.style.width = '100%';
+                setTimeout(function() {
+                    form.submit();
+                }, 200);
+            }
+        }, 100);
+    });
+});
+</script>
+{% endblock %}

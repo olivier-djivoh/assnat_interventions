@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0"><i class="fas fa-edit"></i> Modifier le compte rendu</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> 
+                        Vous modifiez le compte rendu de la requête <strong>#{{ compte_rendu.requete.id }}</strong>.
+                        {% if not compte_rendu.intervention_resolue %}
+                            <br>Le problème n'est pas encore résolu. Après modification, vous pourrez indiquer s'il est résolu.
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.contenu.id_for_label }}" class="form-label">
+                            <i class="fas fa-align-left"></i> {{ form.contenu.label }}
+                            <span class="text-danger">*</span>
+                        </label>
+                        {{ form.contenu }}
+                        {% if form.contenu.errors %}
+                            <div class="text-danger">{{ form.contenu.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-check-circle"></i> {{ form.intervention_resolue.label }}
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="mt-2">
+                            {% for radio in form.intervention_resolue %}
+                                <div class="form-check form-check-inline">
+                                    {{ radio.tag }}
+                                    <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                        {{ radio.choice_label }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.pieces_jointes.id_for_label }}" class="form-label">
+                            <i class="fas fa-paperclip"></i> {{ form.pieces_jointes.label }}
+                        </label>
+                        {{ form.pieces_jointes }}
+                        {% if compte_rendu.pieces_jointes %}
+                            <div class="mt-2">
+                                <small>Fichier actuel : 
+                                    <a href="{{ compte_rendu.pieces_jointes.url }}" target="_blank">
+                                        {{ compte_rendu.pieces_jointes.name }}
+                                    </a>
+                                </small>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Enregistrer les modifications
+                    </button>
+                    {% if compte_rendu.requete %}
+                        <a href="{% url 'detail_requete' compte_rendu.requete.id %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Annuler
+                        </a>
+                    {% else %}
+                        <a href="{% url 'accueil' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Annuler
+                        </a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-file-signature"></i> Saisir un compte rendu</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="compteRenduForm">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.contenu.id_for_label }}" class="form-label">
+                            <i class="fas fa-align-left"></i> {{ form.contenu.label }}
+                            <span class="text-danger">*</span>
+                        </label>
+                        {{ form.contenu }}
+                        {% if form.contenu.errors %}
+                            <div class="text-danger">{{ form.contenu.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-check-circle"></i> {{ form.intervention_resolue.label }}
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="mt-2">
+                            {% for radio in form.intervention_resolue %}
+                                <div class="form-check form-check-inline">
+                                    {{ radio.tag }}
+                                    <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                        {{ radio.choice_label }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.pieces_jointes.id_for_label }}" class="form-label">
+                            <i class="fas fa-paperclip"></i> {{ form.pieces_jointes.label }}
+                        </label>
+                        {{ form.pieces_jointes }}
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i> 
+                            Formats acceptés : jpg, jpeg, png, gif, pdf, doc, docx, xls, xlsx. Taille max : 3 Mo.
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                    <a href="{% url 'detail_requete' view.kwargs.pk %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Annuler
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('compteRenduForm');
+    const fileInput = document.getElementById('id_pieces_jointes');
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx'];
+    const maxSize = 3 * 1024 * 1024; // 3 Mo
+    
+    fileInput.addEventListener('change', function(e) {
+        const file = this.files[0];
+        
+        if (file) {
+            // Vérifier la taille
+            if (file.size > maxSize) {
+                Swal.fire({
+                    title: 'Fichier trop lourd !',
+                    text: `Le fichier "${file.name}" fait ${(file.size / (1024 * 1024)).toFixed(1)} Mo. La taille maximale est de 3 Mo.`,
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#dc3545'
+                });
+                this.value = '';
+                return;
+            }
+            
+            // Vérifier l'extension
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!allowedExtensions.includes(ext)) {
+                Swal.fire({
+                    title: 'Format non autorisé !',
+                    text: `Le fichier "${file.name}" a une extension .${ext} non autorisée.\nFormats acceptés : ${allowedExtensions.join(', ')}`,
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#dc3545'
+                });
+                this.value = '';
+                return;
+            }
+            
+            // Succès
+            Swal.fire({
+                title: 'Fichier valide',
+                text: `Le fichier "${file.name}" (${(file.size / (1024 * 1024)).toFixed(1)} Mo) est accepté.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    });
+    
+    form.addEventListener('submit', function(e) {
+        const contenu = document.getElementById('id_contenu').value.trim();
+        if (!contenu) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Champ obligatoire',
+                text: 'Veuillez décrire votre intervention.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#ffc107'
+            });
+        }
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+    /* Style pour les cases radio */
+    .form-check-inline {
+        margin-right: 20px;
+    }
+    .form-check-input {
+        margin-right: 5px;
+        cursor: pointer;
+    }
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    .form-check-label {
+        cursor: pointer;
+        font-size: 1rem;
+    }
+</style>
+{% endblock %}

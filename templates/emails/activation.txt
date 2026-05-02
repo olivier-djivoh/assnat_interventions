@@ -1,0 +1,12 @@
+Bonjour {{ user.get_full_name|default:user.username }},
+
+Votre compte sur la plateforme de gestion des interventions de l'Assemblée nationale a été validé par l'administrateur.
+
+Pour finaliser votre inscription et définir votre mot de passe, veuillez cliquer sur le lien suivant :
+
+{{ lien }}
+
+Ce lien est valable pendant 3 jours.
+
+Cordialement,
+L'équipe technique

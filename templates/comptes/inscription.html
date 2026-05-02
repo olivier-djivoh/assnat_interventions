@@ -1,0 +1,703 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscription - Assemblée Nationale{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ========== VARIABLES ========== */
+    :root {
+        --primary-dark: #0f2b3d;
+        --primary: #1c4e6f;
+        --primary-light: #2c6e9e;
+        --primary-lighter: #3d7eae;
+        --white: #ffffff;
+        --gray-light: #f8fafc;
+        --gray-border: #e2e8f0;
+        --gray: #5a6e7c;
+        --shadow-sm: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 20px 35px -10px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        --radius-card: 32px;
+        --radius-input: 16px;
+        --transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    /* Masquer la navbar et sidebar */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    nav.navbar, .sidebar, header, .navbar {
+        display: none !important;
+    }
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 0 !important;
+        min-height: 100vh !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .container-fluid, .row, .col-md-10, .col-lg-10 {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100%;
+    }
+
+    /* Arrière-plan avec effet de particules */
+    body {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+        position: relative;
+        overflow-x: hidden;
+    }
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2000 2000'%3E%3Ccircle cx='300' cy='300' r='200' fill='rgba(255,255,255,0.03)'/%3E%3Ccircle cx='1700' cy='1500' r='350' fill='rgba(255,255,255,0.02)'/%3E%3C/svg%3E") repeat;
+        pointer-events: none;
+        animation: floatBg 30s linear infinite;
+    }
+    @keyframes floatBg {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(-5%, -5%); }
+    }
+
+    .register-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        width: 100%;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Carte principale */
+    .register-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(0px);
+        border-radius: var(--radius-card);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        width: 100%;
+        max-width: 680px;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        animation: slideUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+    .register-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 35px 60px -15px rgba(0,0,0,0.35);
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* En-tête */
+    .register-header {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+        padding: 40px 30px 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .register-header::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -20%;
+        width: 140%;
+        height: 140%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotateBg 25s linear infinite;
+    }
+    @keyframes rotateBg {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .logo-container {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+    }
+    .logo-container img {
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid rgba(255,255,255,0.9);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .logo-container img:hover {
+        transform: scale(1.05) rotate(2deg);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    }
+
+    .register-header h1 {
+        font-size: 28px;
+        font-weight: 800;
+        margin: 15px 0 5px;
+        color: white;
+        font-family: 'Playfair Display', serif;
+        letter-spacing: -0.3px;
+        position: relative;
+        z-index: 2;
+    }
+    .register-header p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 14px;
+        color: white;
+        letter-spacing: 0.5px;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Corps du formulaire */
+    .register-body {
+        padding: 40px 35px;
+        background: white;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 0;
+    }
+    .form-row .form-group {
+        flex: 1;
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--primary-dark);
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        transition: color 0.2s;
+    }
+
+    .required-asterisk {
+        color: #dc3545;
+        font-size: 14px;
+        margin-left: 3px;
+    }
+
+    .optional-badge {
+        color: var(--gray);
+        font-size: 10px;
+        font-weight: normal;
+        margin-left: 8px;
+        text-transform: none;
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary);
+        z-index: 10;
+        font-size: 1.1rem;
+        transition: color 0.2s;
+    }
+
+    .form-control, select.form-control {
+        width: 100%;
+        padding: 15px 18px 15px 50px;
+        border: 1.5px solid var(--gray-border);
+        border-radius: var(--radius-input);
+        font-size: 15px;
+        transition: var(--transition);
+        background: var(--gray-light);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .form-control:focus, select.form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(28,78,111,0.12);
+        transform: translateY(-1px);
+    }
+
+    .form-control:focus + .input-icon {
+        color: var(--primary-light);
+    }
+
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231c4e6f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 18px center;
+        background-size: 14px;
+        cursor: pointer;
+    }
+
+    .help-text {
+        font-size: 11px;
+        color: var(--gray);
+        margin-top: 6px;
+        line-height: 1.4;
+    }
+
+    /* Bouton d'inscription */
+    .btn-register {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        margin: 30px 0 20px;
+        font-family: 'Inter', sans-serif;
+        letter-spacing: 0.8px;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        box-shadow: 0 4px 12px rgba(28,78,111,0.2);
+    }
+    .btn-register::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
+        z-index: -1;
+    }
+    .btn-register:hover::before {
+        left: 100%;
+    }
+    .btn-register:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(28,78,111,0.35);
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    }
+    .btn-register:active {
+        transform: translateY(0);
+    }
+
+    /* Lien vers connexion */
+    .login-link {
+        text-align: center;
+        color: var(--gray);
+        font-size: 14px;
+        border-top: 1px solid var(--gray-border);
+        padding-top: 22px;
+        margin-top: 5px;
+    }
+    .login-link a {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        position: relative;
+    }
+    .login-link a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--primary);
+        transition: width 0.3s;
+    }
+    .login-link a:hover::after {
+        width: 100%;
+    }
+    .login-link a:hover {
+        color: var(--primary-dark);
+    }
+
+    /* Alertes stylisées */
+    .alert {
+        padding: 14px 20px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        font-size: 13px;
+        font-weight: 500;
+        border-left: 4px solid;
+        background: var(--gray-light);
+        animation: fadeAlert 0.4s ease-out;
+    }
+    @keyframes fadeAlert {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .alert-success {
+        border-left-color: #2e7d32;
+        color: #1e4620;
+        background: #e6f4ea;
+    }
+    .alert-warning, .alert-info {
+        border-left-color: var(--primary);
+        color: var(--primary-dark);
+        background: #e8f0fe;
+    }
+    .alert-error {
+        border-left-color: #dc3545;
+        color: #842029;
+        background: #feeceb;
+    }
+
+    /* Responsive */
+    @media (max-width: 680px) {
+        .register-card {
+            max-width: 95%;
+        }
+        .register-body {
+            padding: 30px 25px;
+        }
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+        .form-row .form-group {
+            margin-bottom: 24px;
+        }
+        .register-header h1 {
+            font-size: 24px;
+        }
+        .logo-container img {
+            width: 70px;
+            height: 70px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <div class="logo-container">
+                <img src="{% static 'images/an.png' %}" 
+                     alt="Assemblée nationale - République du Bénin"
+                     onerror="this.src='https://placehold.co/90/0f2b3d/white?text=AN'">
+            </div>
+            <h1>Assemblée nationale</h1>
+            <p>Création de compte</p>
+        </div>
+        
+        <div class="register-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="post" id="inscriptionForm">
+                {% csrf_token %}
+                
+                <!-- Nom d'utilisateur -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Nom d'utilisateur
+                        <span class="required-asterisk">*</span>
+                    </label>
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" name="username" class="form-control" 
+                               placeholder="Choisissez un nom d'utilisateur" value="{{ form.username.value|default:'' }}" required>
+                    </div>
+                    <div class="help-text">150 caractères max. Lettres, chiffres, @ . + - _</div>
+                </div>
+                
+                <!-- Prénom et Nom -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Prénom
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        <div class="input-group">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" name="first_name" class="form-control" 
+                                   placeholder="Votre prénom" value="{{ form.first_name.value|default:'' }}" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            Nom
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        <div class="input-group">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" name="last_name" class="form-control" 
+                                   placeholder="Votre nom" value="{{ form.last_name.value|default:'' }}" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Email et Contact -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Email
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        <div class="input-group">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" name="email" class="form-control" 
+                                   placeholder="votre@email.com" value="{{ form.email.value|default:'' }}" required>
+                        </div>
+                        {% if form.email.errors %}
+                            <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                <div class="form-group">
+                        <label class="form-label">
+                            Contact
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">+229 01</span>
+                            <input type="text" name="contact" class="form-control" 
+                                placeholder="XX XX XX XX" value="{{ form.contact.value|default:''|slice:'-8' }}"
+                                maxlength="11" pattern="\d{2} \d{2} \d{2} \d{2}" 
+                                title="Entrez 8 chiffres, par exemple 12 34 56 78" required>
+                        </div>
+                        <div class="help-text">Entrez les 8 derniers chiffres. Le préfixe +229 01 est automatique.</div>
+                        {% if form.contact.errors %}
+                            <div class="text-danger small mt-1">{{ form.contact.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Type de contrat -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Type de contrat
+                        <span class="required-asterisk">*</span>
+                    </label>
+                    <div class="input-group">
+                        <i class="fas fa-briefcase input-icon"></i>
+                        <select name="type_contrat" class="form-control" required>
+                            <option value="">Sélectionnez...</option>
+                            <option value="PERMANENT" {% if form.type_contrat.value == 'PERMANENT' %}selected{% endif %}>Permanent (SGA)</option>
+                            <option value="CONTRACTUEL" {% if form.type_contrat.value == 'CONTRACTUEL' %}selected{% endif %}>Contractuel (Cabinet Président)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Direction -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Direction / Cabinet
+                        <span class="required-asterisk">*</span>
+                    </label>
+                    <div class="input-group">
+                        <i class="fas fa-building input-icon"></i>
+                        <select name="direction" id="id_direction" class="form-control" required>
+                            <option value="">Sélectionnez...</option>
+                            {% for direction in form.direction.field.queryset %}
+                                <option value="{{ direction.id }}" {% if form.direction.value == direction.id %}selected{% endif %}>{{ direction.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Service (optionnel) -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Service
+                        <span class="optional-badge">(optionnel)</span>
+                    </label>
+                    <div class="input-group">
+                        <i class="fas fa-users input-icon"></i>
+                        <select name="service" id="id_service" class="form-control">
+                            <option value="">Sélectionnez...</option>
+                        </select>
+                    </div>
+                    <div class="help-text">À sélectionner si vous travaillez dans un service (sinon laissez vide)</div>
+                </div>
+                
+                <!-- Division (optionnel) -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Division
+                        <span class="optional-badge">(optionnel)</span>
+                    </label>
+                    <div class="input-group">
+                        <i class="fas fa-sitemap input-icon"></i>
+                        <select name="division" id="id_division" class="form-control">
+                            <option value="">Sélectionnez...</option>
+                        </select>
+                    </div>
+                    <div class="help-text">À sélectionner si vous travaillez dans une division (sinon laissez vide)</div>
+                </div>
+                
+                <!-- Mot de passe et confirmation -->
+                
+                
+                <button type="submit" class="btn-register" id="registerBtn">
+                    Créer mon compte
+                </button>
+                
+                <div class="login-link">
+                    Déjà inscrit ?
+                    <a href="{% url 'connexion' %}">Se connecter</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const directionSelect = document.getElementById('id_direction');
+    const serviceSelect = document.getElementById('id_service');
+    const divisionSelect = document.getElementById('id_division');
+
+    function updateServices() {
+        const directionId = directionSelect.value;
+        serviceSelect.innerHTML = '<option value="">Sélectionnez...</option>';
+        divisionSelect.innerHTML = '<option value="">Sélectionnez...</option>';
+        
+        if (!directionId) return;
+        
+        fetch(`/comptes/api/services/?direction=${directionId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(service => {
+                    const option = document.createElement('option');
+                    option.value = service.id;
+                    option.textContent = service.nom;
+                    serviceSelect.appendChild(option);
+                });
+                // Si une valeur de service était pré-sélectionnée (ex: erreur de formulaire)
+                const preselectedService = "{{ form.service.value|default:'' }}";
+                if (preselectedService && serviceSelect.querySelector(`option[value="${preselectedService}"]`)) {
+                    serviceSelect.value = preselectedService;
+                    updateDivisions();
+                }
+            })
+            .catch(error => console.error('Erreur lors du chargement des services:', error));
+    }
+
+    function updateDivisions() {
+        const serviceId = serviceSelect.value;
+        divisionSelect.innerHTML = '<option value="">Sélectionnez...</option>';
+        
+        if (!serviceId) return;
+        
+        fetch(`/comptes/api/divisions/?service=${serviceId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(division => {
+                    const option = document.createElement('option');
+                    option.value = division.id;
+                    option.textContent = division.nom;
+                    divisionSelect.appendChild(option);
+                });
+                const preselectedDivision = "{{ form.division.value|default:'' }}";
+                if (preselectedDivision && divisionSelect.querySelector(`option[value="${preselectedDivision}"]`)) {
+                    divisionSelect.value = preselectedDivision;
+                }
+            })
+            .catch(error => console.error('Erreur lors du chargement des divisions:', error));
+    }
+
+    directionSelect.addEventListener('change', updateServices);
+    serviceSelect.addEventListener('change', updateDivisions);
+    
+    // Initialisation
+    if (directionSelect.value) {
+        updateServices();
+        // Attendre le chargement des services avant de charger les divisions si service pré-sélectionné
+        if ("{{ form.service.value|default:'' }}") {
+            setTimeout(() => {
+                if (serviceSelect.value) updateDivisions();
+            }, 200);
+        }
+    }
+
+    // Effet de chargement sur le bouton
+    const form = document.getElementById('inscriptionForm');
+    const btn = document.getElementById('registerBtn');
+    form.addEventListener('submit', function(e) {
+        if (btn) {
+            btn.innerHTML = '<span><i class="fas fa-circle-notch fa-spin me-2"></i> Création en cours...</span>';
+            btn.disabled = true;
+        }
+    });
+});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const contactInput = document.querySelector('input[name="contact"]');
+        if (contactInput) {
+            contactInput.addEventListener('input', function(e) {
+                // Sauvegarder la position du curseur
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                
+                // Récupérer les chiffres uniquement
+                let raw = this.value.replace(/\D/g, '');
+                // Limiter à 8 chiffres
+                if (raw.length > 8) raw = raw.slice(0, 8);
+                
+                // Formater avec espaces tous les 2 chiffres
+                let formatted = '';
+                for (let i = 0; i < raw.length; i += 2) {
+                    if (i > 0) formatted += ' ';
+                    formatted += raw.slice(i, i + 2);
+                }
+                
+                // Calculer la nouvelle position du curseur
+                let newCursor = start;
+                if (raw.length > 0) {
+                    // Ajuster en fonction des espaces ajoutés
+                    let spacesBefore = Math.floor(start / 2);
+                    newCursor = start + spacesBefore;
+                    if (newCursor > formatted.length) newCursor = formatted.length;
+                }
+                
+                this.value = formatted;
+                // Restaurer la position du curseur
+                this.setSelectionRange(newCursor, newCursor);
+            });
+        }
+    });
+</script>
+
+{% endblock %}

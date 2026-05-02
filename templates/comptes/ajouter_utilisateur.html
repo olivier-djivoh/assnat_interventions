@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Carte principale */
+    .add-user-card {
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .add-user-card .card-header {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+        padding: 1.3rem 1.8rem;
+        border-bottom: none;
+    }
+
+    .add-user-card .card-header h4 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .add-user-card .card-body {
+        padding: 2rem;
+    }
+
+    /* Styles des champs */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .form-label i {
+        color: #0d6efd;
+        width: 20px;
+    }
+
+    .required-star {
+        color: #dc3545;
+        margin-left: 4px;
+    }
+
+    .form-control, select, textarea {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.6rem 1rem;
+        transition: all 0.3s ease;
+        background-color: #f8fafc;
+        font-size: 0.95rem;
+        width: 100%;
+    }
+
+    .form-control:focus, select:focus, textarea:focus {
+        border-color: #0d6efd;
+        background-color: white;
+        box-shadow: 0 0 0 4px rgba(13,110,253,0.15);
+        outline: none;
+    }
+
+    select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%230d6efd' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px;
+        cursor: pointer;
+    }
+
+    .help-text {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+    }
+
+    /* Boutons */
+    .btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        border-radius: 40px;
+        padding: 0.6rem 1.8rem;
+        font-weight: 600;
+        transition: all 0.3s;
+        color: white;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(16,185,129,0.3);
+        color: white;
+    }
+
+    .btn-secondary {
+        background-color: #e2e8f0;
+        border: none;
+        color: #1e293b;
+        border-radius: 40px;
+        padding: 0.6rem 1.8rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #cbd5e1;
+        transform: translateY(-2px);
+    }
+
+    /* Alertes */
+    .alert-error {
+        background-color: #fee2e2;
+        border-left: 4px solid #dc2626;
+        color: #991b1b;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .add-user-card .card-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card add-user-card">
+            <div class="card-header">
+                <h4><i class="fas fa-user-plus me-2"></i> Ajouter un utilisateur</h4>
+                <p class="text-white-50 mb-0 small">Remplissez les informations pour créer un nouveau compte</p>
+            </div>
+            <div class="card-body">
+                <form method="post" id="userForm">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert-error">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Type de contrat -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-briefcase"></i> Type de contrat
+                            <span class="required-star">*</span>
+                        </label>
+                        {{ form.type_contrat }}
+                        {% if form.type_contrat.errors %}
+                            <div class="text-danger small">{{ form.type_contrat.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Direction / Cabinet -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-building"></i> Direction / Cabinet
+                            <span class="required-star">*</span>
+                        </label>
+                        {{ form.direction }}
+                        {% if form.direction.errors %}
+                            <div class="text-danger small">{{ form.direction.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Service -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-users"></i> Service
+                        </label>
+                        {{ form.service }}
+                        <div class="help-text">Sélectionnez d'abord une direction</div>
+                        {% if form.service.errors %}
+                            <div class="text-danger small">{{ form.service.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Division -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-layer-group"></i> Division
+                        </label>
+                        {{ form.division }}
+                        <div class="help-text">Sélectionnez d'abord un service</div>
+                        {% if form.division.errors %}
+                            <div class="text-danger small">{{ form.division.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Informations personnelles -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-user"></i> Nom 
+                                <span class="required-star">*</span>
+                            </label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-user"></i> Prénom 
+                                <span class="required-star">*</span>
+                            </label>
+                                {{ form.first_name }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-envelope"></i> Email 
+                                <span class="required-star">*</span>
+                            </label>
+                                {{ form.email }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label"><i class="fas fa-phone"></i> Contact</label>
+                                {{ form.contact }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nom d'utilisateur (ajouté) -->
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-user-circle"></i> Nom d'utilisateur
+                        <span class="required-star">*</span>
+                    </label>
+                        {{ form.username }}
+                        <div class="help-text">Identifiant unique pour la connexion</div>
+                    </div>
+
+                    
+
+                    
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i> Créer l'utilisateur
+                        </button>
+                        <a href="{% url 'gestion_utilisateurs' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const directionSelect = document.getElementById('id_direction');
+        const serviceSelect = document.getElementById('id_service');
+        const divisionSelect = document.getElementById('id_division');
+
+        function updateServices() {
+            const directionId = directionSelect.value;
+            serviceSelect.innerHTML = '<option value="">---------</option>';
+            divisionSelect.innerHTML = '<option value="">---------</option>';
+            
+            if (!directionId) return;
+            
+            fetch(`/comptes/api/services/?direction=${directionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(service => {
+                        const option = document.createElement('option');
+                        option.value = service.id;
+                        option.textContent = service.nom;
+                        serviceSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erreur:', error));
+        }
+
+        function updateDivisions() {
+            const serviceId = serviceSelect.value;
+            divisionSelect.innerHTML = '<option value="">---------</option>';
+            
+            if (!serviceId) return;
+            
+            fetch(`/comptes/api/divisions/?service=${serviceId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(division => {
+                        const option = document.createElement('option');
+                        option.value = division.id;
+                        option.textContent = division.nom;
+                        divisionSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erreur:', error));
+        }
+
+        if (directionSelect) {
+            directionSelect.addEventListener('change', updateServices);
+        }
+        if (serviceSelect) {
+            serviceSelect.addEventListener('change', updateDivisions);
+        }
+
+        // Déclencher les mises à jour si des valeurs sont pré-sélectionnées (modification)
+        if (directionSelect.value) updateServices();
+        if (serviceSelect.value) updateDivisions();
+    });
+</script>
+{% endblock %}

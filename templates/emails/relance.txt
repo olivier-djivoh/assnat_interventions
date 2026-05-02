@@ -1,0 +1,15 @@
+Bonjour {{ nom }},
+
+La requête suivante est toujours en attente de traitement depuis {{ delai_texte }} :
+
+Titre : {{ requete.titre }}
+Date de création : {{ requete.date_creation|date:"d/m/Y H:i" }}
+Demandeur : {{ requete.demandeur.get_full_name }}
+Statut : {{ requete.get_statut_display }}
+{% if requete.division_attribuee %}Division attribuée : {{ requete.division_attribuee.nom }}{% endif %}
+
+Veuillez prendre les mesures nécessaires.
+
+Cordialement,
+Le système de gestion des interventions
+Assemblée Nationale

@@ -1,0 +1,426 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(13,110,253,0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(13,110,253,0); }
+        100% { box-shadow: 0 0 0 0 rgba(13,110,253,0); }
+    }
+
+    .detail-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease-out;
+        margin-bottom: 1.5rem;
+    }
+
+    .detail-card .card-header {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        color: white;
+        padding: 1.2rem 1.5rem;
+        border-bottom: none;
+    }
+
+    .detail-card .card-header h4 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .detail-card .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.4rem 0.9rem;
+        font-weight: 500;
+        border-radius: 40px;
+        font-size: 0.8rem;
+    }
+
+    /* Info ligne */
+    .info-row {
+        display: flex;
+        align-items: baseline;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eef2f6;
+    }
+
+    .info-label {
+        width: 180px;
+        font-weight: 600;
+        color: #1e293b;
+        flex-shrink: 0;
+    }
+
+    .info-value {
+        color: #334155;
+        flex: 1;
+    }
+
+    /* Description */
+    .description-box {
+        background-color: #f8fafc;
+        border-radius: 16px;
+        padding: 1.2rem;
+        margin-top: 0.5rem;
+        border-left: 4px solid #0d6efd;
+        line-height: 1.6;
+    }
+
+    /* Compte rendu */
+    .cr-card {
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        margin-bottom: 1rem;
+    }
+
+    .cr-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .cr-header {
+        padding: 1rem 1.2rem;
+        border-radius: 16px 16px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .cr-body {
+        padding: 1.2rem;
+        background: white;
+        border-radius: 0 0 16px 16px;
+        border: 1px solid #eef2f6;
+        border-top: none;
+    }
+
+    /* Boutons */
+    .btn-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        border: none;
+        border-radius: 40px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(13,110,253,0.3);
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        border: none;
+        border-radius: 40px;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(245,158,11,0.3);
+        color: white;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        border-radius: 40px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(16,185,129,0.3);
+    }
+
+    .btn-secondary {
+        background-color: #e2e8f0;
+        border: none;
+        color: #1e293b;
+        border-radius: 40px;
+        padding: 0.5rem 1.5rem;
+        transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #cbd5e1;
+        transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .info-row {
+            flex-direction: column;
+        }
+        .info-label {
+            width: 100%;
+            margin-bottom: 0.25rem;
+        }
+        .info-value {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <!-- Carte principale -->
+        <div class="card detail-card">
+            <div class="card-header">
+                <h4><i class="fas fa-info-circle me-2"></i> Demande #{{ requete.id }} - {{ requete.date_creation|date:"d/m/Y" }}</h4>
+            </div>
+            <div class="card-body">
+                <!-- Informations organisées -->
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-user me-2 text-primary"></i> Demandeur :</div>
+                    <div class="info-value">{{ requete.demandeur.get_full_name }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-calendar-alt me-2 text-primary"></i> Date de création :</div>
+                    <div class="info-value">{{ requete.date_creation|date:"d/m/Y" }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-clock me-2 text-primary"></i> Heure :</div>
+                    <div class="info-value">{{ requete.date_creation|date:"H:i" }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-tag me-2 text-primary"></i> Type :</div>
+                    <div class="info-value">{{ requete.type_demande.nom }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-map-marker-alt me-2 text-primary"></i> Localisation :</div>
+                    <div class="info-value">{{ requete.localisation|default:"Non précisée" }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-check-circle me-2 text-primary"></i> Statut requête :</div>
+                    <div class="info-value">
+                        {% if requete.statut == 'EN_ATTENTE' %}
+                            <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i> En attente</span>
+                        {% else %}
+                            <span class="badge bg-success"><i class="fas fa-check me-1"></i> Résolu</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-file-alt me-2 text-primary"></i> Statut compte rendu </div>
+                    <div class="info-value">
+                        {% if statut_compte_rendu_code == 'AUCUN' %}
+                            <span class="badge bg-secondary"><i class="fas fa-hourglass-start me-1"></i> Aucun compte rendu</span>
+                        {% elif statut_compte_rendu_code == 'EN_COURS' %}
+                            <span class="badge bg-info text-dark"><i class="fas fa-pen me-1"></i> En cours</span>
+                        {% elif statut_compte_rendu_code == 'MODIFIE' %}
+                            <span class="badge bg-warning text-dark"><i class="fas fa-edit me-1"></i> Modifié</span>
+                        {% elif statut_compte_rendu_code == 'RESOLU' %}
+                            <span class="badge bg-success"><i class="fas fa-check-double me-1"></i> Résolu</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if compte_rendu.date_derniere_modification %}
+                <div class="info-row">
+                    <div class="info-label"><i class="fas fa-history me-2 text-primary"></i> Dernière modification :</div>
+                    <div class="info-value">{{ compte_rendu.date_derniere_modification|date:"d/m/Y H:i" }}</div>
+                </div>
+                {% endif %}
+                
+                <!-- Description -->
+                <div class="mt-3">
+                    <strong><i class="fas fa-align-left me-2 text-primary"></i> Description :</strong>
+                    <div class="description-box mt-2">
+                        {{ requete.description|linebreaks }}
+                    </div>
+                </div>
+
+                <!-- Attribution -->
+                {% if requete.division_attribuee %}
+                    <div class="mt-3 pt-2 border-top">
+                        <div class="info-row">
+                            <div class="info-label"><i class="fas fa-users me-2 text-primary"></i> Attribuée à :</div>
+                            <div class="info-value">{{ requete.division_attribuee.nom }}</div>
+                        </div>
+                        {% with attribution=requete.attributions.last %}
+                            {% if attribution and attribution.chef_division %}
+                                <div class="info-row">
+                                    <div class="info-label"><i class="fas fa-user-tie me-2 text-primary"></i> Chef de division :</div>
+                                    <div class="info-value">{{ attribution.chef_division.get_full_name }}</div>
+                                </div>
+                                {% if attribution.commentaire %}
+                                    <div class="info-row">
+                                        <div class="info-label"><i class="fas fa-comment me-2 text-primary"></i> Commentaire :</div>
+                                        <div class="info-value">{{ attribution.commentaire }}</div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Section Comptes rendus -->
+        <div class="mt-4">
+            <h3 class="mb-3" style="color: #1e293b;"><i class="fas fa-history me-2 text-primary"></i> Comptes rendus</h3>
+            
+            {% if compte_rendu %}
+                <div class="cr-card">
+                    <div class="cr-header {% if compte_rendu.intervention_resolue %}bg-success text-white{% else %}bg-warning text-dark{% endif %}">
+                        <div>
+                            <i class="fas fa-user-tie me-2"></i>
+                            <strong>{{ compte_rendu.chef_division.get_full_name }}</strong>
+                            <span class="ms-2 opacity-75">• {{ compte_rendu.date|date:"d/m/Y à H:i" }}</span>
+                        </div>
+                        <span class="badge {% if compte_rendu.intervention_resolue %}bg-light text-success{% else %}bg-dark text-warning{% endif %}">
+                            {% if compte_rendu.intervention_resolue %}
+                                <i class="fas fa-check-circle"></i> Résolu
+                            {% else %}
+                                <i class="fas fa-hourglass-half"></i> Non résolu
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="cr-body">
+                        {{ compte_rendu.contenu|linebreaks }}
+                        {% if compte_rendu.pieces_jointes %}
+                            <div class="mt-3">
+                                <a href="{{ compte_rendu.pieces_jointes.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-paperclip me-1"></i> Voir la pièce jointe
+                                </a>
+                            </div>
+                        {% endif %}
+                        
+                        {% if peut_modifier_compte_rendu %}
+                            <div class="mt-3 pt-2 border-top">
+                                <a href="{% url 'modifier_compte_rendu' compte_rendu.id %}" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit me-1"></i> Modifier le compte rendu
+                                </a>
+                                <small class="text-muted ms-2">Le problème n'est pas encore résolu. Vous pouvez mettre à jour.</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info d-flex align-items-center" style="border-radius: 16px; background-color: #e6f0ff; border: none;">
+                    <i class="fas fa-info-circle fa-lg me-3 text-primary"></i>
+                    <span>Aucun compte rendu n'a encore été saisi pour cette requête.</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="mt-4 d-flex flex-wrap align-items-center gap-2">
+            {% if peut_attribuer %}
+                <a href="{% url 'attribuer_requete' requete.id %}" class="btn btn-warning">
+                    <i class="fas fa-user-check me-1"></i> Attribuer à une division
+                </a>
+            {% endif %}
+            
+            {% if peut_rendre_compte %}
+                <a href="{% url 'compte_rendu' requete.id %}" class="btn btn-success">
+                    <i class="fas fa-file-alt me-1"></i> Saisir un compte rendu
+                </a>
+            {% endif %}
+            
+            {% if peut_cloturer %}
+                <button type="button" id="btnCloturer" class="btn btn-primary" data-requete-id="{{ requete.id }}">
+                    <i class="fas fa-check-double me-1"></i> Clôturer la requête
+                </button>
+            {% endif %}
+            
+            <a href="{% url 'accueil' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Retour
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- SweetAlert2 (si non présent dans base.html) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btnCloturer = document.getElementById('btnCloturer');
+    
+    if (btnCloturer) {
+        btnCloturer.addEventListener('click', function(e) {
+            const requeteId = this.getAttribute('data-requete-id');
+            const url = `/requetes/${requeteId}/cloturer/`;
+            
+            Swal.fire({
+                title: 'Clôturer la requête ?',
+                html: "Êtes-vous sûr de vouloir clôturer cette requête ?<br><small>Cette action est irréversible.</small>",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Oui, clôturer',
+                cancelButtonText: 'Annuler',
+                reverseButtons: true,
+                backdrop: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Récupérer le token CSRF
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+                    if (!csrfToken) {
+                        Swal.fire('Erreur', 'Token CSRF manquant. Veuillez rafraîchir la page.', 'error');
+                        return;
+                    }
+                    
+                    // Soumission POST via fetch
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            return response.json();
+                        }
+                    })
+                    .then(data => {
+                        if (data && data.error) {
+                            Swal.fire('Erreur', data.error, 'error');
+                        } else if (data && data.success) {
+                            Swal.fire('Succès', data.message || 'Requête clôturée avec succès.', 'success')
+                                .then(() => window.location.reload());
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        Swal.fire('Erreur', 'Une erreur est survenue lors de la clôture.', 'error');
+                    });
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

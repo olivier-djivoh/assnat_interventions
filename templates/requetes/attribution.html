@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Animation d'entrée */
+    @keyframes fadeSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Carte stylisée */
+    .attribution-card {
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .attribution-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.15);
+    }
+
+    .attribution-card .card-header {
+        background: linear-gradient(115deg, #0d6efd 0%, #0a58ca 100%);
+        padding: 1.2rem 1.5rem;
+        border-bottom: none;
+    }
+    .attribution-card .card-header h4 {
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: -0.2px;
+    }
+
+    .attribution-card .card-body {
+        padding: 2rem;
+    }
+
+    /* Labels */
+    .form-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #1e293b;
+        margin-bottom: 0.4rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .form-label i {
+        color: #0d6efd;
+        width: 18px;
+    }
+
+    /* Select personnalisé (déjà présent mais on renforce) */
+    select.form-select {
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        background-color: #ffffff;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+    select.form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+        outline: none;
+    }
+
+    /* Textarea */
+    textarea.form-control {
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+    textarea.form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+        outline: none;
+    }
+
+    /* Boutons */
+    .btn-primary {
+        background: linear-gradient(115deg, #0d6efd 0%, #0a58ca 100%);
+        border: none;
+        border-radius: 40px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px rgba(13,110,253,0.3);
+        background: linear-gradient(115deg, #0a58ca 0%, #0d6efd 100%);
+    }
+
+    .btn-secondary {
+        background-color: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        color: #1e293b;
+        border-radius: 40px;
+        padding: 0.5rem 1.5rem;
+        transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+        background-color: #e6edf5;
+        transform: translateY(-2px);
+    }
+
+    /* Texte d'aide */
+    .form-text {
+        font-size: 0.7rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .attribution-card .card-body {
+            padding: 1.5rem;
+        }
+        .d-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card attribution-card">
+            <div class="card-header">
+                <h4 class="mb-0 text-white"><i class="fas fa-share me-2"></i> Attribuer la requête</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Chef de division avec select stylisé -->
+                    <div class="mb-4">
+                        <label for="{{ form.chef_division.id_for_label }}" class="form-label">
+                            <i class="fas fa-user-tie"></i> Chef de division
+                        </label>
+                        {{ form.chef_division }}
+                        {% if form.chef_division.errors %}
+                            <div class="text-danger small mt-1">{{ form.chef_division.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i> Sélectionnez le chef de division à qui attribuer cette requête
+                        </div>
+                    </div>
+                    
+                    <!-- Commentaire optionnel -->
+                    <div class="mb-4">
+                        <label for="{{ form.commentaire.id_for_label }}" class="form-label">
+                            <i class="fas fa-comment"></i> Commentaire (optionnel)
+                        </label>
+                        {{ form.commentaire }}
+                        {% if form.commentaire.errors %}
+                            <div class="text-danger small mt-1">{{ form.commentaire.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check me-1"></i> Attribuer
+                        </button>
+                        <a href="{% url 'detail_requete' view.kwargs.pk %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

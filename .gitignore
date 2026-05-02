@@ -1,0 +1,44 @@
+# Django & Python
+*.pyc
+__pycache__/
+*.log
+*.pot
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+*.sqlite3
+
+# Environnement virtuel
+venv/
+env/
+ENV/
+.env
+*.env
+
+# Fichiers de paquets
+*.egg-info/
+dist/
+build/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Journaux et traces
+*.log
+*.pid
+
+# Migration (optionnel – décommentez si vous voulez les ignorer)
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# Fichiers de déploiement
+*.pyc
+*.pyo
+*.pyd

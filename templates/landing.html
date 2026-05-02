@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Assemblée nationale · Gestion des interventions</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        /* VOTRE CSS ORIGINAL - AUCUNE MODIFICATION */
+        :root {
+            --primary-dark: #0f2b3d;
+            --primary: #1c4e6f;
+            --primary-light: #2c6e9e;
+            --primary-lighter: #3d7eae;
+            --white: #ffffff;
+            --gray-light: #f8fafc;
+            --gray: #5a6e7c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--gray-light) 0%, #f1f5f9 100%);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        
+        h1, h2, h3, .navbar-brand {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* ===== ANIMATIONS ===== */
+        
+        /* Particules flottantes */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(28,78,111,0.3), transparent);
+            border-radius: 50%;
+            animation: floatParticle linear infinite;
+            z-index: 999;
+        }
+        
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.4;
+            }
+            90% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-20vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Animation de vague lumineuse bleue */
+        @keyframes rippleBlue {
+            0% {
+                box-shadow: 0 0 0 0 rgba(28,78,111,0.3);
+                transform: scale(1);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(28,78,111,0);
+                transform: scale(1.02);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(28,78,111,0);
+                transform: scale(1);
+            }
+        }
+        
+        /* Animation de scintillement bleu */
+        @keyframes shimmerBlue {
+            0% {
+                background-position: -200% 0;
+                opacity: 0.7;
+            }
+            100% {
+                background-position: 200% 0;
+                opacity: 0.7;
+            }
+        }
+        
+        /* Animation de rotation lente */
+        @keyframes elegantRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Animation d'expansion douce */
+        @keyframes softExpand {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        /* Animation de vague sur le texte */
+        @keyframes textWave {
+            0%, 100% {
+                letter-spacing: normal;
+            }
+            50% {
+                letter-spacing: 1px;
+            }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            border-radius: 10px;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.03);
+            padding: 0.8rem 0;
+            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            z-index: 1030;
+            animation: softExpand 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+            padding: 0.5rem 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            transition: all 0.4s;
+            position: relative;
+        }
+        
+        .navbar-brand::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: width 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        .navbar-brand:hover::after {
+            width: 100%;
+        }
+        
+        .navbar-brand img {
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand:hover img {
+            transform: scale(1.08) rotate(3deg);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .btn-outline-primary {
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            border: 1.5px solid var(--primary);
+            color: var(--primary);
+            transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-outline-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transition: width 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: -1;
+            border-radius: 50px;
+        }
+        
+        .btn-outline-primary:hover::before {
+            width: 100%;
+        }
+        
+        .btn-outline-primary:hover {
+            color: white;
+            border-color: transparent;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(28,78,111,0.25);
+        }
+        
+        /* Hero Section - OVERLAY ÉCLAIRCI */
+        .hero {
+            position: relative;
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 30%;
+            z-index: 0;
+            filter: brightness(1);
+            transition: transform 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            animation: softExpand 1.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        .hero:hover .hero-bg {
+            transform: scale(1.05);
+        }
+        
+        /* OVERLAY PLUS CLAIR - Laisse mieux voir l'image */
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15,43,61,0.5) 0%, rgba(28,78,111,0.55) 100%);
+            z-index: 1;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 120px 0 180px 0;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,100,0.12);
+            backdrop-filter: blur(12px);
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.8rem;
+            border: 1px solid rgba(255,255,255,0.25);
+            animation: rippleBlue 2s ease-in-out infinite, softExpand 0.8s ease-out;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1.2rem;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+            line-height: 1.2;
+            animation: softExpand 0.8s ease-out 0.1s both;
+        }
+        
+        .hero h1 span {
+    
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    position: relative;
+    display: inline-block;
+    animation: shimmerDarkBlue 3s infinite linear;
+    background-size: 200% auto;
+    font-weight: 800;
+}
+
+@keyframes shimmerDarkBlue {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+        .hero p {
+            font-size: 1.2rem;
+            color:white;
+            max-width: 550px;
+            line-height: 1.6;
+            animation: softExpand 0.8s ease-out 0.2s both;
+        }
+        
+        .btn-hero {
+            background: white;
+            color: var(--primary);
+            border-radius: 50px;
+            padding: 14px 36px;
+            font-weight: 600;
+            transition: all 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            margin: 0.5rem;
+            border: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            animation: softExpand 0.8s ease-out 0.3s both;
+        }
+        
+        .btn-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: -1;
+        }
+        
+        .btn-hero:hover::before {
+            left: 100%;
+        }
+        
+        .btn-hero:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .btn-hero-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            box-shadow: none;
+        }
+        
+        .btn-hero-outline:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-8px) scale(1.02);
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            animation: softExpand 0.8s ease-out 0.4s both;
+        }
+        
+        .hero-stats .stat-item {
+            text-align: left;
+            transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .hero-stats .stat-item::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: width 0.4s ease;
+        }
+        
+        .hero-stats .stat-item:hover::after {
+            width: 100%;
+        }
+        
+        .hero-stats .stat-item:hover {
+            transform: translateY(-10px);
+        }
+        
+        .hero-stats .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            display: block;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+        }
+        
+        .hero-stats .stat-item:hover .stat-number {
+            transform: scale(1.1);
+            color: white;
+        }
+        
+        .hero-stats .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Section Title */
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(28,78,111,0.1), rgba(15,43,61,0.05));
+            color: var(--primary);
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+            animation: softExpand 0.6s ease-out;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+            animation: textWave 3s ease-in-out infinite;
+        }
+        
+        .section-title h2:after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 3px;
+            animation: expandWidth 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1) 0.3s forwards;
+        }
+        
+        @keyframes expandWidth {
+            from { width: 0; }
+            to { width: 70px; }
+        }
+        
+        .section-title p {
+            color: var(--gray);
+            max-width: 600px;
+            margin: 1.8rem auto 0;
+        }
+        
+        /* Feature Cards */
+        .feature-card {
+            background: white;
+            border-radius: 28px;
+            padding: 2rem;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(0,0,0,0.03);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px -15px rgba(0,0,0,0.05);
+            animation: softExpand 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) backwards;
+        }
+        
+        .feature-card:nth-child(1) { animation-delay: 0.05s; }
+        .feature-card:nth-child(2) { animation-delay: 0.1s; }
+        .feature-card:nth-child(3) { animation-delay: 0.15s; }
+        .feature-card:nth-child(4) { animation-delay: 0.2s; }
+        .feature-card:nth-child(5) { animation-delay: 0.25s; }
+        .feature-card:nth-child(6) { animation-delay: 0.3s; }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 30px 50px -25px rgba(0,0,0,0.2);
+            border-color: rgba(28,78,111,0.2);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(28,78,111,0.08), rgba(15,43,61,0.05));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: linear-gradient(135deg, rgba(28,78,111,0.15), rgba(15,43,61,0.1));
+        }
+        
+        .feature-icon i {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover .feature-icon i {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+        
+        .feature-card h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: var(--primary-dark);
+        }
+        
+        .feature-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        /* Stats Section */
+        .stats {
+            background: linear-gradient(135deg, #ffffff 0%, var(--gray-light) 100%);
+            padding: 4rem 0;
+            border-radius: 60px;
+            margin: 3rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid rgba(28,78,111,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(28,78,111,0.03) 0%, transparent 70%);
+            animation: elegantRotate 40s linear infinite;
+        }
+        
+        .stat-item {
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+            animation: softExpand 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) backwards;
+        }
+        
+        .stat-item:nth-child(1) { animation-delay: 0.1s; }
+        .stat-item:nth-child(2) { animation-delay: 0.2s; }
+        .stat-item:nth-child(3) { animation-delay: 0.3s; }
+        .stat-item:nth-child(4) { animation-delay: 0.4s; }
+        
+        .stat-item:hover {
+            transform: translateY(-12px);
+        }
+        
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            transition: all 0.4s;
+        }
+        
+        .stat-item:hover .stat-number {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            transform: scale(1.08);
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Role Cards */
+        .role-card {
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 100%;
+            box-shadow: 0 10px 30px -15px rgba(0,0,0,0.05);
+            border: 1px solid #eef2f8;
+            animation: softExpand 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) backwards;
+        }
+        
+        .role-card:nth-child(1) { animation-delay: 0.05s; }
+        .role-card:nth-child(2) { animation-delay: 0.1s; }
+        .role-card:nth-child(3) { animation-delay: 0.15s; }
+        .role-card:nth-child(4) { animation-delay: 0.2s; }
+        .role-card:nth-child(5) { animation-delay: 0.25s; }
+        
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        .role-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .role-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 30px 50px -20px rgba(0,0,0,0.2);
+            border-color: var(--primary);
+        }
+        
+        .role-header {
+            padding: 1.2rem;
+            text-align: center;
+            font-weight: 700;
+            color: white;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .role-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .role-card:hover .role-header::before {
+            opacity: 1;
+            animation: elegantRotate 0.8s ease-out;
+        }
+        
+        /* Couleurs originales des rôles */
+        .role-card .bg-secondary {
+            background-color: #6c757d !important;
+        }
+        
+        .role-card .bg-info {
+            background-color: #0dcaf0 !important;
+        }
+        
+        .role-card .bg-warning {
+            background-color: #ffc107 !important;
+        }
+        
+        .role-card .bg-primary {
+            background-color: #0d6efd !important;
+        }
+        
+        .role-card .bg-success {
+            background-color: #198754 !important;
+        }
+        
+        .role-body {
+            padding: 1.5rem;
+        }
+        
+        .role-body ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        
+        .role-body li {
+            margin-bottom: 0.8rem;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--gray);
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        .role-body li:hover {
+            transform: translateX(10px);
+            color: var(--primary);
+        }
+        
+        .role-body .fa-check-circle {
+            color: #2e7d32;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        
+        .role-body li:hover .fa-check-circle {
+            transform: scale(1.2);
+            color: var(--primary-light);
+        }
+        
+        .role-body .fa-times-circle {
+            color: #ff9999;
+            font-size: 0.85rem;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            border-radius: 60px;
+            padding: 4.5rem 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: softExpand 0.9s ease-out;
+        }
+        
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: -20%;
+            width: 140%;
+            height: 160%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: elegantRotate 25s linear infinite;
+        }
+        
+        .cta-section h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+            animation: softExpand 0.6s ease-out;
+        }
+        
+        .cta-section p {
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-cta {
+            background: white;
+            color: var(--primary);
+            border-radius: 50px;
+            padding: 12px 32px;
+            font-weight: 600;
+            transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: none;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .btn-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .btn-cta:hover::before {
+            left: 100%;
+        }
+        
+        .btn-cta:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.25);
+        }
+        
+        .btn-cta-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-cta-outline:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-8px) scale(1.02);
+        }
+        
+        /* Footer */
+        footer {
+            background: #0a1a24;
+            color: #94a3b8;
+            margin-top: 4rem;
+        }
+        
+        footer h5 {
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        footer h5:after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: width 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        footer h5:hover:after {
+            width: 100%;
+        }
+        
+        footer a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+        
+        footer a:hover {
+            color: var(--primary-light);
+            transform: translateX(6px);
+        }
+        
+        .social-icon {
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .social-icon:hover {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            transform: translateY(-6px) rotate(360deg);
+        }
+        
+        hr {
+            border-color: rgba(255,255,255,0.05);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero-content { padding: 80px 0 120px 0; }
+            .section-title h2 { font-size: 1.8rem; }
+            .hero-stats { flex-wrap: wrap; gap: 1.5rem; justify-content: center; }
+            .hero-stats .stat-item { text-align: center; }
+            .cta-section { padding: 2.5rem 1.5rem; }
+            .cta-section h3 { font-size: 1.5rem; }
+        }
+        
+        @media (max-width: 992px) {
+            .hero-content { text-align: center; }
+            .hero p { margin-left: auto; margin-right: auto; }
+            .hero-stats { justify-content: center; }
+        }
+        
+        .col-lg-2_4 {
+            flex: 0 0 auto;
+            width: 20%;
+        }
+        
+        @media (max-width: 992px) {
+            .col-lg-2_4 { width: 50%; }
+        }
+        
+        @media (max-width: 576px) {
+            .col-lg-2_4 { width: 100%; }
+        }
+        
+        @keyframes subtleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Particules flottantes -->
+<script>
+    function createParticles() {
+        const particleCount = 30;
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            const size = Math.random() * 6 + 2;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = Math.random() * 10 + 7 + 's';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.opacity = Math.random() * 0.4 + 0.1;
+            document.body.appendChild(particle);
+        }
+    }
+    createParticles();
+</script>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="{% static 'images/an.png' %}" alt="Logo AN" style="height: 48px; width: 48px; border-radius: 50%; margin-right: 12px;" onerror="this.src='https://placehold.co/48/0f2b3d/white?text=AN'">
+            Assemblée nationale
+        </a>
+        <div class="ms-auto">
+            <a href="{% url 'connexion' %}" class="btn btn-outline-primary me-2"><i class="fas fa-arrow-right-to-bracket"></i> Connexion</a>
+            <a href="{% url 'inscription' %}" class="btn btn-outline-primary"><i class="fas fa-user-plus"></i> Inscription</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section avec overlay plus clair -->
+<section class="hero">
+    <img src="{% static 'images/assemblee-nationale.jpg' %}" 
+         alt="Assemblée Nationale" 
+         class="hero-bg"
+         onerror="this.style.display='none'; this.nextElementSibling.style.background='linear-gradient(135deg, #0f2b3d 0%, #1c4e6f 100%)'">
+    <div class="hero-overlay"></div>
+    
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-7 text-white">
+                <div class="hero-badge">
+                    <i class="fas fa-building me-2"></i> PLATEFORME OFFICIELLE
+                </div>
+                <h1>Gestion centralisée<br>des <span id="typed-word">interventions</span></h1>
+                <p class="lead">Plateforme officielle de l'Assemblée nationale pour le suivi des demandes informatiques, de réparation et d'archivage.</p>
+                <div class="mt-4">
+                    <a href="{% url 'connexion' %}" class="btn btn-hero"><i class="fas fa-arrow-right-to-bracket"></i> Accéder</a>
+                    <a href="{% url 'inscription' %}" class="btn btn-hero btn-hero-outline"><i class="fas fa-user-plus"></i> Créer un compte</a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- Section Fonctionnalités -->
+<div class="container py-5">
+    <div class="section-title">
+        <span class="section-badge">Pourquoi nous choisir</span>
+        <h2>Fonctionnalités clés</h2>
+        <p>Une plateforme complète pour une gestion efficace des interventions</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-paper-plane"></i></div>
+                <h4>Création de demandes</h4>
+                <p>Soumettez vos demandes en quelques clics avec description et localisation précise.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-route"></i></div>
+                <h4>Routage automatique</h4>
+                <p>Les demandes sont dirigées vers le service compétent sans intervention manuelle.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-bell"></i></div>
+                <h4>Notifications temps réel</h4>
+                <p>Soyez informé instantanément des attributions et des comptes rendus.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <h4>Tableaux de bord</h4>
+                <p>Visualisez les statistiques et l'état d'avancement des requêtes.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-history"></i></div>
+                <h4>Traçabilité complète</h4>
+                <p>Journal d'audit détaillé de toutes les actions effectuées.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                <h4>Contrôle d'accès</h4>
+                <p>Gestion fine des permissions selon le rôle de chaque utilisateur.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistiques -->
+<div class="stats container-fluid">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-sm-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="5">0</div>
+                    <div class="stat-label">Rôles distincts</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="100">0%</div>
+                    <div class="stat-label">Traçabilité</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="24">0</div>
+                    <div class="stat-label">Disponibilité (24/7)</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="100">0</div>
+                    <div class="stat-label">Sécurisé</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section rôles -->
+<div class="container py-5">
+    <div class="section-title">
+        <span class="section-badge">Contrôle d'accès</span>
+        <h2>5 rôles, 5 niveaux d'accès</h2>
+        <p>Chaque utilisateur accède uniquement aux fonctionnalités de sa fonction</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-sm-6 col-md-4 col-lg-2_4">
+            <div class="role-card">
+                <div class="role-header bg-secondary">Personnel</div>
+                <div class="role-body">
+                    <p><i class="fas fa-user me-2"></i> Crée et suit ses propres demandes</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Créer des demandes</li>
+                        <li><i class="fas fa-check-circle"></i> Voir ses demandes</li>
+                        <li><i class="fas fa-times-circle"></i> Attribuer</li>
+                        <li><i class="fas fa-times-circle"></i> Changer le statut</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-2_4">
+            <div class="role-card">
+                <div class="role-header bg-info">Chef de division</div>
+                <div class="role-body">
+                    <p><i class="fas fa-tasks me-2"></i> Traite les demandes de sa division</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Voir les requêtes attribuées</li>
+                        <li><i class="fas fa-check-circle"></i> Saisir des comptes rendus</li>
+                        <li><i class="fas fa-check-circle"></i> Indiquer la résolution</li>
+                        <li><i class="fas fa-times-circle"></i> Attribuer à d'autres</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-2_4">
+            <div class="role-card">
+                <div class="role-header bg-warning text-dark">Chef de service</div>
+                <div class="role-body">
+                    <p><i class="fas fa-users me-2"></i> Supervise les demandes de son service</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Toutes les requêtes du service</li>
+                        <li><i class="fas fa-check-circle"></i> Attribuer aux divisions</li>
+                        <li><i class="fas fa-check-circle"></i> Clôturer les requêtes</li>
+                        <li><i class="fas fa-check-circle"></i> Statistiques du service</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-2_4">
+            <div class="role-card">
+                <div class="role-header bg-primary">Directeur</div>
+                <div class="role-body">
+                    <p><i class="fas fa-building me-2"></i> Pilote la direction</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Voir toutes les requêtes</li>
+                        <li><i class="fas fa-check-circle"></i> Statistiques globales</li>
+                        <li><i class="fas fa-check-circle"></i> Suivi de l'activité</li>
+                        <li><i class="fas fa-times-circle"></i> Attribuer ou modifier</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-2_4">
+            <div class="role-card">
+                <div class="role-header bg-success">Administrateur</div>
+                <div class="role-body">
+                    <p><i class="fas fa-crown me-2"></i> Accès complet à toutes les fonctions</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Gérer les utilisateurs</li>
+                        <li><i class="fas fa-check-circle"></i> Valider les inscriptions</li>
+                        <li><i class="fas fa-check-circle"></i> Statistiques complètes</li>
+                        <li><i class="fas fa-check-circle"></i> Gérer l'organigramme</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA -->
+<div class="container my-5">
+    <div class="cta-section">
+        <h3>Prêt à simplifier la gestion des interventions ?</h3>
+        <p>Rejoignez la plateforme officielle de l'Assemblée nationale</p>
+        <div>
+            <a href="{% url 'inscription' %}" class="btn btn-cta me-3"><i class="fas fa-user-plus"></i> Créer un compte</a>
+            <a href="{% url 'connexion' %}" class="btn btn-cta btn-cta-outline"><i class="fas fa-sign-in-alt"></i> Se connecter</a>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="container pt-5 pb-4">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h5><i class="fas fa-landmark me-2"></i> Assemblée nationale</h5>
+                <p class="small" style="opacity: 0.7;">Plateforme officielle de gestion des demandes internes de l'Assemblée Nationale de la République du Bénin. Suivi en temps réel, traçabilité complète et contrôle d'accès par rôle.</p>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                </div>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h5>Liens</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#">Accueil</a></li>
+                    <li class="mb-2"><a href="{% url 'connexion' %}">Connexion</a></li>
+                    <li class="mb-2"><a href="{% url 'inscription' %}">Inscription</a></li>
+                    <li class="mb-2"><a href="#">Mentions légales</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h5>Horaires</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-clock me-2"></i>Lun - Ven: 08h00 - 17h30</li>
+                    <li class="mb-2"><i class="fas fa-clock me-2"></i>Samedi: 08h00 - 13h00</li>
+                    <li><i class="fas fa-clock me-2"></i>Dimanche: Fermé</li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h5>Contact</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>Palais des gouverneurs, Porto-Novo</li>
+                    <li class="mb-2"><i class="fas fa-phone me-2"></i>+229 21 30 15 00</li>
+                    <li><i class="fas fa-envelope me-2"></i>contact@assemblee.bj</li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+        <div class="row align-items-center small">
+           <div class="col-md-6 text-center text-md-start">
+                &copy; {% now "Y" %} Assemblée nationale — République du Bénin. Tous droits réservés.
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <span>Version 3.0</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    // Initialisation AOS
+    AOS.init({ once: true, offset: 80, duration: 800, easing: 'ease-in-out' });
+    
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const nav = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    });
+
+    // ========== ANIMATIONS JAVASCRIPT SUPPLEMENTAIRES ==========
+
+    // 1. Effet de machine à écrire sur le mot "interventions"
+    function typeWriter(element, words, speed = 100) {
+        let wordIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let currentText = '';
+        function type() {
+            const currentWord = words[wordIndex];
+            if (isDeleting) {
+                currentText = currentWord.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                currentText = currentWord.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            element.textContent = currentText;
+            if (!isDeleting && charIndex === currentWord.length) {
+                isDeleting = true;
+                setTimeout(type, 1500);
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                wordIndex = (wordIndex + 1) % words.length;
+                setTimeout(type, 300);
+            } else {
+                setTimeout(type, isDeleting ? speed / 2 : speed);
+            }
+        }
+        type();
+    }
+    const typedSpan = document.getElementById('typed-word');
+    if (typedSpan) {
+        typeWriter(typedSpan, ['interventions', 'maintenances', 'archivages', 'réparations'], 120);
+    }
+
+    // 2. Compteurs animés pour les statistiques (section .stats)
+    const counters = document.querySelectorAll('.stats .stat-number[data-count]');
+    let counted = false;
+    function animateCounters() {
+        if (counted) return;
+        const statsSection = document.querySelector('.stats');
+        const rect = statsSection.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 100) {
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-count'), 10);
+                if (isNaN(target)) return;
+                let current = 0;
+                const increment = target / 50;
+                const updateCounter = () => {
+                    current += increment;
+                    if (current < target) {
+                        let displayValue = Math.floor(current);
+                        if (counter.innerText.includes('%')) {
+                            counter.innerText = displayValue + '%';
+                        } else {
+                            counter.innerText = displayValue;
+                        }
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        if (counter.innerText.includes('%')) {
+                            counter.innerText = target + '%';
+                        } else {
+                            counter.innerText = target;
+                        }
+                    }
+                };
+                updateCounter();
+            });
+            counted = true;
+        }
+    }
+    window.addEventListener('scroll', animateCounters);
+    window.addEventListener('load', animateCounters);
+
+    // 3. Animation des cartes fonctionnalités au survol (effet 3D)
+    const cards = document.querySelectorAll('.feature-card');
+    cards.forEach(card => {
+        card.addEventListener('mousemove', function(e) {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 20;
+            const rotateY = (centerX - x) / 20;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+        });
+        card.addEventListener('mouseleave', function() {
+            card.style.transform = '';
+        });
+    });
+
+    // 4. Parallaxe sur l'image hero
+    window.addEventListener('scroll', () => {
+        const heroBg = document.querySelector('.hero-bg');
+        if (heroBg) {
+            const scrollY = window.scrollY;
+            heroBg.style.transform = `translateY(${scrollY * 0.2}px) scale(1.05)`;
+        }
+    });
+
+    // ========== NOUVELLES ANIMATIONS AJOUTEES ==========
+
+    // 5. Animation d'apparition séquentielle des fonctionnalités (stagger)
+    const featureCards = document.querySelectorAll('.feature-card');
+    const observerOptions = { threshold: 0.2 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const index = Array.from(featureCards).indexOf(entry.target);
+                entry.target.style.transitionDelay = `${index * 0.1}s`;
+                entry.target.classList.add('animate-feature');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    featureCards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'opacity 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1)';
+        observer.observe(card);
+    });
+    // Ajout de la classe CSS pour l'animation
+    const style = document.createElement('style');
+    style.textContent = `
+        .feature-card.animate-feature {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+        .role-card, .stat-item, .cta-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .role-card.animate-role, .stat-item.animate-stat, .cta-section.animate-cta {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    `;
+    document.head.appendChild(style);
+
+    // 6. Animation des rôles et statistiques au scroll
+    const roleCards = document.querySelectorAll('.role-card');
+    const statItems = document.querySelectorAll('.stat-item');
+    const cta = document.querySelector('.cta-section');
+    
+    const roleObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const idx = Array.from(roleCards).indexOf(entry.target);
+                entry.target.style.transitionDelay = `${idx * 0.05}s`;
+                entry.target.classList.add('animate-role');
+                roleObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.2 });
+    roleCards.forEach(card => roleObserver.observe(card));
+    
+    const statObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const idx = Array.from(statItems).indexOf(entry.target);
+                entry.target.style.transitionDelay = `${idx * 0.1}s`;
+                entry.target.classList.add('animate-stat');
+                statObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.2 });
+    statItems.forEach(item => statObserver.observe(item));
+    
+    if (cta) {
+        const ctaObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-cta');
+                    ctaObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+        ctaObserver.observe(cta);
+    }
+
+    // 7. Effet de scintillement sur les icônes des rôles au survol
+    const roleIcons = document.querySelectorAll('.role-body .fa-check-circle, .role-body .fa-times-circle');
+    roleIcons.forEach(icon => {
+        icon.addEventListener('mouseenter', function() {
+            this.style.filter = 'drop-shadow(0 0 5px currentColor)';
+            this.style.transform = 'scale(1.2)';
+        });
+        icon.addEventListener('mouseleave', function() {
+            this.style.filter = '';
+            this.style.transform = '';
+        });
+    });
+
+    // 8. Animation de vague sur les titres de section (scroll)
+    const sectionTitles = document.querySelectorAll('.section-title h2');
+    const titleObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'textWave 3s ease-in-out infinite';
+                titleObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+    sectionTitles.forEach(title => titleObserver.observe(title));
+
+    // 9. Confettis légers lors du clic sur les boutons CTA (effet de surprise)
+    const ctaBtns = document.querySelectorAll('.btn-cta, .btn-hero');
+    ctaBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            // Petit effet de confettis si la librairie est chargée (optionnel)
+            // On peut simplement ajouter une animation de ripple
+            const ripple = document.createElement('span');
+            ripple.style.position = 'absolute';
+            ripple.style.borderRadius = '50%';
+            ripple.style.backgroundColor = 'rgba(255,255,255,0.6)';
+            ripple.style.width = '20px';
+            ripple.style.height = '20px';
+            ripple.style.left = `${e.clientX - btn.offsetLeft - 10}px`;
+            ripple.style.top = `${e.clientY - btn.offsetTop - 10}px`;
+            ripple.style.pointerEvents = 'none';
+            ripple.style.animation = 'rippleBlue 0.6s ease-out';
+            btn.style.position = 'relative';
+            btn.style.overflow = 'hidden';
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+
+    // 10. Animation du badge hero (déjà CSS, mais on ajoute un effet de pulsation supplémentaire)
+    const heroBadge = document.querySelector('.hero-badge');
+    if (heroBadge) {
+        setInterval(() => {
+            heroBadge.style.transform = 'scale(1.02)';
+            setTimeout(() => { heroBadge.style.transform = ''; }, 300);
+        }, 4000);
+    }
+</script>
+
+</body>
+</html>

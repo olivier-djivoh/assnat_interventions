@@ -1,0 +1,813 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Connexion - Assemblée Nationale{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ========== VARIABLES ========== */
+    :root {
+        --primary-dark: #0a1a2a;
+        --primary: #1c4e6f;
+        --primary-light: #3a7ca5;
+        --accent: #f5b042;
+        --white: #ffffff;
+        --gray-light: #f8fafc;
+        --gray-border: rgba(0,0,0,0.08);
+        --gray: #5a6e7c;
+        --shadow-sm: 0 15px 35px -10px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 30px 60px -15px rgba(0, 0, 0, 0.2);
+        --radius-card: 40px;
+        --radius-input: 28px;
+        --transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    /* Masquer navbar et sidebar */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    nav.navbar, .sidebar, header, .navbar {
+        display: none !important;
+    }
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 0 !important;
+        min-height: 100vh !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .container-fluid, .row, .col-md-10, .col-lg-10 {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100%;
+    }
+
+    /* Arrière-plan avec effet de gradient animé + particules */
+    body {
+        background: linear-gradient(135deg, #0a1a2a 0%, #1a3a4a 50%, #0a2a3a 100%);
+        position: relative;
+        overflow-x: hidden;
+    }
+    /* Animation de gradient en fond */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 20% 30%, rgba(255,200,100,0.05) 0%, transparent 60%),
+                    radial-gradient(circle at 80% 70%, rgba(100,150,200,0.08) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
+    /* Canvas pour particules interactives */
+    #particleCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* Container principal */
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        width: 100%;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Carte principale avec effet glassmorphism */
+    .login-card {
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(0px);
+        border-radius: var(--radius-card);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        width: 100%;
+        max-width: 1300px;
+        display: flex;
+        flex-wrap: wrap;
+        transition: var(--transition);
+        opacity: 0;
+        transform: scale(0.98) translateY(20px);
+        animation: cardEntrance 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.2) forwards;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    @keyframes cardEntrance {
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+    .login-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 45px 70px -20px rgba(0,0,0,0.35);
+    }
+
+    /* Colonne gauche - message d'accueil avec effet de profondeur */
+    .welcome-col {
+        flex: 1.2;
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+        padding: 60px 50px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    .welcome-col::before {
+        content: '';
+        position: absolute;
+        top: -20%;
+        left: -20%;
+        width: 140%;
+        height: 140%;
+        background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+        animation: rotateBg 30s linear infinite;
+    }
+    @keyframes rotateBg {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    .welcome-col::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 30%;
+        background: linear-gradient(to top, rgba(0,0,0,0.1), transparent);
+        pointer-events: none;
+    }
+    .welcome-content {
+        position: relative;
+        z-index: 2;
+    }
+    .welcome-badge {
+        display: inline-block;
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(12px);
+        padding: 8px 22px;
+        border-radius: 60px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        margin-bottom: 40px;
+        border: 1px solid rgba(255,255,255,0.25);
+        animation: pulseGlow 2s infinite;
+    }
+    @keyframes pulseGlow {
+        0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.2); }
+        70% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+        100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+    }
+    .welcome-col h1 {
+        font-size: 3.8rem;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 25px;
+        font-family: 'Playfair Display', serif;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .welcome-col h1 span {
+        background: linear-gradient(135deg, #ffd966, #ffb347);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+        animation: shimmerText 3s infinite;
+    }
+    @keyframes shimmerText {
+        0% { background-position: -100% 0; }
+        100% { background-position: 200% 0; }
+    }
+    .welcome-col p {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        opacity: 0.9;
+        margin-bottom: 45px;
+        max-width: 90%;
+    }
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 30px;
+    }
+    .feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 22px;
+        font-size: 1rem;
+        opacity: 0;
+        transform: translateX(-25px);
+        animation: slideInLeft 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+    }
+    .feature-list li:nth-child(1) { animation-delay: 0.1s; }
+    .feature-list li:nth-child(2) { animation-delay: 0.2s; }
+    .feature-list li:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes slideInLeft {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    .feature-list li i {
+        width: 28px;
+        font-size: 1.3rem;
+        color: var(--accent);
+        transition: all 0.3s;
+    }
+    .feature-list li:hover i {
+        transform: scale(1.2) rotate(3deg);
+        filter: drop-shadow(0 0 5px rgba(245,176,66,0.5));
+    }
+
+    /* Colonne droite - formulaire avec glassmorphism subtil */
+    .form-col {
+        flex: 0.8;
+        padding: 60px 50px;
+        background: rgba(255,255,255,0.98);
+        backdrop-filter: blur(0px);
+    }
+    .logo-small {
+        text-align: center;
+        margin-bottom: 30px;
+        animation: floatLogo 4s ease-in-out infinite;
+    }
+    @keyframes floatLogo {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+    }
+    .logo-small img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid var(--primary-light);
+        padding: 4px;
+        background: white;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        transition: all 0.4s;
+    }
+    .logo-small img:hover {
+        transform: scale(1.08) rotate(3deg);
+        border-color: var(--accent);
+    }
+   .logo-title {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 10px 0 15px 0;
+    font-family: 'Playfair Display', serif;
+}
+
+    .form-col h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 10px;
+        font-family: 'Playfair Display', serif;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.5s 0.1s forwards;
+    }
+    .form-col .subtitle {
+        color: var(--gray);
+        font-size: 0.95rem;
+        margin-bottom: 35px;
+        border-bottom: 1px solid var(--gray-border);
+        padding-bottom: 20px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.5s 0.2s forwards;
+    }
+    @keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Styles des champs ultra modernes */
+    .form-group {
+        margin-bottom: 28px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.5s 0.3s forwards;
+    }
+    .form-group:nth-of-type(2) {
+        animation-delay: 0.4s;
+    }
+    .form-label {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--primary-dark);
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+    }
+    .input-group {
+        position: relative;
+        transition: all 0.2s;
+    }
+    .input-icon {
+        position: absolute;
+        left: 22px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary);
+        z-index: 10;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+    .form-control {
+        width: 100%;
+        padding: 16px 22px 16px 56px;
+        border: 2px solid var(--gray-border);
+        border-radius: var(--radius-input);
+        font-size: 15px;
+        transition: var(--transition);
+        background: var(--gray-light);
+        font-weight: 500;
+    }
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 5px rgba(28,78,111,0.15);
+        transform: translateY(-2px);
+    }
+    .form-control:focus + .input-icon {
+        color: var(--primary-light);
+        transform: translateY(-50%) scale(1.1);
+        left: 20px;
+    }
+    .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 35px;
+        font-size: 13px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.5s 0.5s forwards;
+    }
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--gray);
+        cursor: pointer;
+        transition: color 0.2s;
+        font-weight: 500;
+    }
+    .remember-me:hover {
+        color: var(--primary);
+    }
+    .remember-me input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: var(--primary);
+        transition: transform 0.1s;
+    }
+    .remember-me input:checked {
+        transform: scale(1.15);
+    }
+    .forgot-password {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        position: relative;
+        transition: color 0.2s;
+    }
+    .forgot-password::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--primary);
+        transition: width 0.3s;
+    }
+    .forgot-password:hover::after {
+        width: 100%;
+    }
+    .forgot-password:hover {
+        color: var(--primary-dark);
+    }
+    .btn-login {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        color: white;
+        border: none;
+        border-radius: 60px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.5s 0.6s forwards;
+        box-shadow: 0 8px 20px rgba(28,78,111,0.3);
+        letter-spacing: 1px;
+    }
+    .btn-login::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+        transition: left 0.6s ease;
+    }
+    .btn-login:hover::before {
+        left: 100%;
+    }
+    .btn-login:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 30px rgba(28,78,111,0.4);
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    }
+    .btn-login:active {
+        transform: translateY(0);
+    }
+    .register-link {
+        text-align: center;
+        font-size: 14px;
+        color: var(--gray);
+        border-top: 1px solid var(--gray-border);
+        padding-top: 25px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.5s 0.7s forwards;
+    }
+    .register-link a {
+        color: var(--primary);
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s;
+        position: relative;
+    }
+    .register-link a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--primary);
+        transition: width 0.3s;
+    }
+    .register-link a:hover::after {
+        width: 100%;
+    }
+    .register-link a:hover {
+        color: var(--primary-dark);
+    }
+
+    /* Alertes animées */
+    .alert {
+        padding: 14px 20px;
+        border-radius: 20px;
+        margin-bottom: 28px;
+        font-size: 13px;
+        font-weight: 500;
+        border-left: 5px solid;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(4px);
+        animation: slideAlert 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    @keyframes slideAlert {
+        from { opacity: 0; transform: translateX(-25px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    .alert-success {
+        border-left-color: #2e7d32;
+        color: #1e4620;
+        background: #e6f4ea;
+    }
+    .alert-warning, .alert-info {
+        border-left-color: var(--primary);
+        color: var(--primary-dark);
+        background: #e8f0fe;
+    }
+    .alert-error {
+        border-left-color: #dc3545;
+        color: #842029;
+        background: #feeceb;
+    }
+
+    /* Effet shake */
+    @keyframes shake {
+        0%,100%{ transform: translateX(0); }
+        10%,30%,50%,70%,90%{ transform: translateX(-6px); }
+        20%,40%,60%,80%{ transform: translateX(6px); }
+    }
+    .shake-effect {
+        animation: shake 0.5s ease-in-out;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .login-card {
+            flex-direction: column;
+            max-width: 600px;
+        }
+        .welcome-col {
+            text-align: center;
+            padding: 45px 35px;
+        }
+        .welcome-col p {
+            max-width: 100%;
+        }
+        .feature-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+        }
+        .feature-list li {
+            margin-bottom: 0;
+        }
+        .form-col {
+            padding: 45px 40px;
+        }
+        .welcome-col h1 {
+            font-size: 2.8rem;
+        }
+    }
+    @media (max-width: 480px) {
+        .login-container {
+            padding: 20px;
+        }
+        .welcome-col h1 {
+            font-size: 2.2rem;
+        }
+        .form-col {
+            padding: 35px 25px;
+        }
+        .logo-small img {
+            width: 65px;
+            height: 65px;
+        }
+        .btn-login {
+            padding: 14px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% with hide_messages=True %}
+<canvas id="particleCanvas"></canvas>
+
+<div class="login-container">
+    <div class="login-card">
+        <!-- Colonne gauche -->
+        <div class="welcome-col">
+            <div class="welcome-content">
+                <div class="welcome-badge">
+                    <i class="fas fa-landmark me-2"></i> RÉPUBLIQUE DU BÉNIN
+                </div>
+                <h1>Bienvenue sur<br><span id="typed-text"></span></h1>
+                <p>La plateforme officielle de gestion des interventions de l'Assemblée nationale. Suivez vos demandes en temps réel, bénéficiez d'un routage intelligent et d'une traçabilité complète.</p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-chart-line"></i> Tableaux de bord personnalisés</li>
+                    <li><i class="fas fa-bolt"></i> Traitement rapide</li>
+                    <li><i class="fas fa-shield-alt"></i> Sécurité des données</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Colonne droite -->
+        <div class="form-col">
+            <div class="logo-small">
+                <img src="{% static 'images/an.png' %}" alt="Logo AN" onerror="this.src='https://placehold.co/80/0f2b3d/white?text=AN'">
+            </div>
+            <div class="logo-title">Assemblée nationale</div>
+            <h2>Connexion</h2>
+            <div class="subtitle">Accédez à votre espace sécurisé</div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" id="loginForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-label">Identifiant</label>
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" name="username" class="form-control" 
+                               placeholder="Votre nom d'utilisateur" required autofocus id="usernameInput">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mot de passe</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" name="password" class="form-control" 
+                               placeholder="Votre mot de passe" required id="passwordInput">
+                    </div>
+                </div>
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember_me">
+                        <span>Se souvenir de moi</span>
+                    </label>
+                    <a href="{% url 'password_reset' %}" class="forgot-password">Mot de passe oublié ?</a>
+                </div>
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <span>Se connecter</span>
+                </button>
+                <div class="register-link">
+                    Nouveau ? <a href="{% url 'inscription' %}">Créer un compte</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ========== PARTICULES AVANCÉES ==========
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId = null;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1.5;
+                this.speedX = (Math.random() - 0.5) * 0.6;
+                this.speedY = (Math.random() - 0.5) * 0.6;
+                this.opacity = Math.random() * 0.4 + 0.1;
+                this.color = `rgba(255, 200, 100, ${this.opacity * 0.6})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < -50) this.x = canvas.width + 50;
+                if (this.x > canvas.width + 50) this.x = -50;
+                if (this.y < -50) this.y = canvas.height + 50;
+                if (this.y > canvas.height + 50) this.y = -50;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                // Ajout d'un léger glow
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = 'rgba(255,200,100,0.3)';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function initParticles(count) {
+            particles = [];
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            animationId = requestAnimationFrame(animateParticles);
+        }
+
+        initParticles(100);
+        animateParticles();
+
+        window.addEventListener('beforeunload', () => {
+            if (animationId) cancelAnimationFrame(animationId);
+        });
+
+        // ========== MACHINE À ÉCRIRE AMÉLIORÉE ==========
+        const typedSpan = document.getElementById('typed-text');
+        const phrases = ['la plateforme'];
+        let indexPhrase = 0;
+        let indexChar = 0;
+        let isDeleting = false;
+
+        function typeEffect() {
+            const current = phrases[indexPhrase];
+            if (isDeleting) {
+                typedSpan.textContent = current.substring(0, indexChar - 1);
+                indexChar--;
+            } else {
+                typedSpan.textContent = current.substring(0, indexChar + 1);
+                indexChar++;
+            }
+            if (!isDeleting && indexChar === current.length) {
+                isDeleting = true;
+                setTimeout(typeEffect, 2000);
+            } else if (isDeleting && indexChar === 0) {
+                isDeleting = false;
+                indexPhrase = (indexPhrase + 1) % phrases.length;
+                setTimeout(typeEffect, 300);
+            } else {
+                setTimeout(typeEffect, isDeleting ? 50 : 100);
+            }
+        }
+        typeEffect();
+
+        // ========== MICRO-INTERACTIONS ==========
+        const usernameInput = document.getElementById('usernameInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+
+        // Shake sur champs vides
+        loginForm.addEventListener('submit', function(e) {
+            let error = false;
+            if (!usernameInput.value.trim()) {
+                usernameInput.classList.add('shake-effect');
+                setTimeout(() => usernameInput.classList.remove('shake-effect'), 500);
+                error = true;
+            }
+            if (!passwordInput.value.trim()) {
+                passwordInput.classList.add('shake-effect');
+                setTimeout(() => passwordInput.classList.remove('shake-effect'), 500);
+                error = true;
+            }
+            if (error) {
+                e.preventDefault();
+                return false;
+            }
+            loginBtn.innerHTML = '<span><i class="fas fa-circle-notch fa-spin me-2"></i> Connexion en cours...</span>';
+            loginBtn.disabled = true;
+        });
+
+        // Animation des icônes au focus
+        const inputGroups = document.querySelectorAll('.input-group');
+        inputGroups.forEach(group => {
+            const icon = group.querySelector('.input-icon');
+            const input = group.querySelector('.form-control');
+            input.addEventListener('focus', () => {
+                icon.style.transform = 'translateY(-50%) scale(1.15)';
+                icon.style.color = 'var(--primary-light)';
+            });
+            input.addEventListener('blur', () => {
+                icon.style.transform = 'translateY(-50%) scale(1)';
+                icon.style.color = 'var(--primary)';
+            });
+        });
+
+        // Animation périodique du logo
+        const logo = document.querySelector('.logo-small img');
+        setInterval(() => {
+            if (logo) {
+                logo.style.transform = 'scale(1.05) rotate(2deg)';
+                setTimeout(() => { logo.style.transform = ''; }, 300);
+            }
+        }, 4000);
+    })();
+</script>
+{% endwith %}
+{% endblock %}

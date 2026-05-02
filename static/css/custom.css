@@ -1,0 +1,140 @@
+/* ===== CHARTE GRAPHIQUE UNIFIÉE ===== */
+:root {
+    --primary: #0d6efd;
+    --primary-dark: #0a58ca;
+    --secondary: #6c757d;
+    --success: #198754;
+    --success-dark: #146c43;
+    --warning: #ffc107;
+    --warning-dark: #e0a800;
+    --danger: #dc3545;
+    --danger-dark: #b02a37;
+    --info: #0dcaf0;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --gray-bg: #f4f7fc;
+}
+
+/* ===== BOUTONS ===== */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-success {
+    background-color: var(--success);
+    border-color: var(--success);
+}
+.btn-success:hover {
+    background-color: var(--success-dark);
+    border-color: var(--success-dark);
+}
+
+.btn-warning {
+    background-color: var(--warning);
+    border-color: var(--warning);
+    color: var(--dark);
+}
+.btn-warning:hover {
+    background-color: var(--warning-dark);
+    border-color: var(--warning-dark);
+    color: var(--dark);
+}
+
+.btn-danger {
+    background-color: var(--danger);
+    border-color: var(--danger);
+}
+.btn-danger:hover {
+    background-color: var(--danger-dark);
+    border-color: var(--danger-dark);
+}
+
+/* ===== EN-TÊTES DE CARTES ===== */
+.card-header {
+    background-color: var(--primary);
+    color: white;
+}
+
+.card-header.bg-success {
+    background-color: var(--success) !important;
+}
+
+.card-header.bg-warning {
+    background-color: var(--warning) !important;
+    color: var(--dark) !important;
+}
+
+.card-header.bg-danger {
+    background-color: var(--danger) !important;
+}
+
+.card-header.bg-info {
+    background-color: var(--info) !important;
+    color: var(--dark) !important;
+}
+
+/* ===== BADGES ===== */
+.badge.bg-primary {
+    background-color: var(--primary) !important;
+}
+.badge.bg-success {
+    background-color: var(--success) !important;
+}
+.badge.bg-warning {
+    background-color: var(--warning) !important;
+    color: var(--dark) !important;
+}
+.badge.bg-danger {
+    background-color: var(--danger) !important;
+}
+.badge.bg-secondary {
+    background-color: var(--secondary) !important;
+}
+
+/* ===== TABLEAUX ===== */
+.table th {
+    background-color: var(--primary);
+    color: white;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* ===== LIENS ===== */
+a {
+    color: var(--primary);
+}
+a:hover {
+    color: var(--primary-dark);
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    background-color: var(--dark) !important;
+}
+.sidebar a:hover, .sidebar a.active {
+    background-color: var(--primary) !important;
+}
+
+/* ===== ALERTES ===== */
+.alert-success {
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+    color: var(--success-dark);
+}
+.alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffecb5;
+    color: #856404;
+}
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+    color: var(--danger-dark);
+}

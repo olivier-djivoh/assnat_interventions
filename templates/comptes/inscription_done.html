@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscription en attente - Assemblée Nationale{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ========== VARIABLES ========== */
+    :root {
+        --primary-dark: #0f2b3d;
+        --primary: #1c4e6f;
+        --primary-light: #2c6e9e;
+        --white: #ffffff;
+        --gray-light: #f8fafc;
+        --gray-border: #e2e8f0;
+        --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        --radius-card: 28px;
+    }
+
+    /* Masquer navbar et sidebar */
+    nav.navbar, .sidebar, header, .navbar {
+        display: none !important;
+    }
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 0 !important;
+        min-height: 100vh !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    body {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    .done-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .done-card {
+        background: white;
+        border-radius: var(--radius-card);
+        box-shadow: var(--shadow);
+        width: 100%;
+        max-width: 520px;
+        overflow: hidden;
+        animation: fadeIn 0.5s ease-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .done-header {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        padding: 35px 25px;
+        text-align: center;
+        color: white;
+    }
+    .done-header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+        font-family: 'Playfair Display', serif;
+        letter-spacing: -0.3px;
+    }
+
+    .done-body {
+        padding: 40px 35px;
+        text-align: center;
+    }
+
+    .success-icon {
+        width: 85px;
+        height: 85px;
+        background: #e6f4ea;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 25px;
+    }
+    .success-icon i {
+        font-size: 3rem;
+        color: #2e7d32;
+    }
+
+    .success-message {
+        margin-bottom: 30px;
+    }
+    .success-message h4 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 12px;
+    }
+    .success-message p {
+        color: #5a6e7c;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .btn-back {
+        display: inline-block;
+        padding: 12px 28px;
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(28,78,111,0.2);
+    }
+    .btn-back:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(28,78,111,0.3);
+        color: white;
+    }
+
+    @media (max-width: 500px) {
+        .done-body { padding: 30px 25px; }
+        .done-header h1 { font-size: 24px; }
+        .success-icon { width: 70px; height: 70px; }
+        .success-icon i { font-size: 2.5rem; }
+        .success-message h4 { font-size: 1.3rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% with hide_messages=True hide_sidebar=True %}
+<div class="done-container">
+    <div class="done-card">
+        <div class="done-header">
+            <h1>✅ Inscription en attente</h1>
+        </div>
+        <div class="done-body">
+            <div class="success-icon">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="success-message">
+                <h4>Votre compte a été créé avec succès !</h4>
+                <p>Il sera activé par l'administrateur dans les plus brefs délais.</p>
+                <p class="mb-0">Vous recevrez un email pour définir votre mot de passe dès que votre compte sera validé.</p>
+            </div>
+            <a href="{% url 'accueil' %}" class="btn-back">
+                <i class="fas fa-home me-2"></i> Retour à l'accueil
+            </a>
+        </div>
+    </div>
+</div>
+{% endwith %}
+{% endblock %}

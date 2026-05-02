@@ -1,0 +1,67 @@
+{% extends "admin/change_form.html" %}
+
+{% block admin_change_form_document_ready %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Script admin chargé !');
+    
+    const directionSelect = document.getElementById('id_direction');
+    const serviceSelect = document.getElementById('id_service');
+    const divisionSelect = document.getElementById('id_division');
+
+    if (!directionSelect || !serviceSelect || !divisionSelect) {
+        console.error('Éléments non trouvés');
+        return;
+    }
+
+    function updateServices() {
+        const directionId = directionSelect.value;
+        console.log('Direction choisie:', directionId);
+        
+        serviceSelect.innerHTML = '<option value="">---------</option>';
+        divisionSelect.innerHTML = '<option value="">---------</option>';
+        
+        if (!directionId) return;
+        
+        fetch('/comptes/api/services/?direction=' + directionId)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Services reçus:', data);
+                data.forEach(service => {
+                    const option = document.createElement('option');
+                    option.value = service.id;
+                    option.textContent = service.nom;
+                    serviceSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Erreur:', error));
+    }
+
+    function updateDivisions() {
+        const serviceId = serviceSelect.value;
+        console.log('Service choisi:', serviceId);
+        
+        divisionSelect.innerHTML = '<option value="">---------</option>';
+        
+        if (!serviceId) return;
+        
+        fetch('/comptes/api/divisions/?service=' + serviceId)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Divisions reçues:', data);
+                data.forEach(division => {
+                    const option = document.createElement('option');
+                    option.value = division.id;
+                    option.textContent = division.nom;
+                    divisionSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Erreur:', error));
+    }
+
+    directionSelect.addEventListener('change', updateServices);
+    serviceSelect.addEventListener('change', updateDivisions);
+});
+</script>
+{% endblock %}

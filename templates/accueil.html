@@ -1,0 +1,571 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Cartes de statistiques */
+    .stat-card {
+        border: none;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+
+    .stat-card .card-body {
+        padding: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-card .stat-icon {
+        position: absolute;
+        right: 20px;
+        bottom: 15px;
+        font-size: 3.5rem;
+        opacity: 0.2;
+        z-index: 0;
+    }
+
+    .stat-card .card-title {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card .display-6 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+
+    /* Cartes graphiques */
+    .chart-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.5s ease-out;
+        height: 100%;
+    }
+
+    .chart-card:hover {
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .chart-card .card-header {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-bottom: none;
+        border-radius: 20px 20px 0 0;
+        font-weight: 600;
+    }
+
+    .chart-card .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Filtres */
+    .filters-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        animation: fadeInUp 0.5s ease-out;
+        background: white;
+    }
+
+    .filters-card .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Tableau */
+    .table-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    .table-card .card-header {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-bottom: none;
+        font-weight: 600;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background-color: #f8fafc;
+        color: #1e293b;
+        font-weight: 600;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 1rem;
+    }
+
+    .table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f1f5f9;
+    }
+
+    .table td {
+        padding: 0.75rem 1rem;
+        vertical-align: middle;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.4rem 0.75rem;
+        font-weight: 500;
+        border-radius: 40px;
+    }
+
+    /* Pagination */
+    .pagination .page-link {
+        color: #0d6efd;
+        border-radius: 8px;
+        margin: 0 3px;
+        border: none;
+        padding: 0.5rem 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .pagination .page-link:hover {
+        background-color: #e6f0ff;
+        color: #0a58ca;
+    }
+
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(13,110,253,0.3);
+    }
+
+    /* Boutons */
+    .btn-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        border: none;
+        border-radius: 40px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(13,110,253,0.3);
+    }
+
+    .btn-secondary {
+        background-color: #e2e8f0;
+        border: none;
+        color: #1e293b;
+        border-radius: 40px;
+        padding: 0.5rem 1.5rem;
+        transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #cbd5e1;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <h2 class="mb-0" style="font-weight: 700; color: #1e293b;">
+        <i class="fas fa-tachometer-alt me-2" style="color: #0d6efd;"></i> Tableau de bord
+    </h2>
+    <a href="{% url 'creer_requete' %}" class="btn btn-primary">
+        <i class="fas fa-plus-circle me-2"></i> Nouvelle requête
+    </a>
+</div>
+
+<!-- Statistiques (pour certains rôles) -->
+{% if user.role == 'chef_service' or user.role == 'directeur' or user.is_superuser %}
+<div class="row mb-4 g-4" id="statistiques">
+    <div class="col-md-3 col-sm-6">
+        <div class="card stat-card text-white bg-primary">
+            <div class="card-body">
+                <h6 class="card-title">Total requêtes</h6>
+                <p class="display-6" id="total">0</p>
+                <div class="stat-icon"><i class="fas fa-chalkboard-user"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="card stat-card text-white" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+            <div class="card-body">
+                <h6 class="card-title">En attente</h6>
+                <p class="display-6" id="en_attente">0</p>
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="card stat-card text-white" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <div class="card-body">
+                <h6 class="card-title">Résolues</h6>
+                <p class="display-6" id="resolues">0</p>
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="card stat-card text-white" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+            <div class="card-body">
+                <h6 class="card-title">Délai moyen</h6>
+                <p class="display-6" id="delai_moyen">0j</p>
+                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4 g-4">
+    <div class="col-md-6">
+        <div class="card chart-card">
+            <div class="card-header">
+                <i class="fas fa-chart-pie me-2"></i> Répartition par type
+            </div>
+            <div class="card-body">
+                <canvas id="typeChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card chart-card">
+            <div class="card-header">
+                <i class="fas fa-chart-simple me-2"></i> Statut global
+            </div>
+            <div class="card-body">
+                <canvas id="statutChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+fetch("{% url 'statistiques_json' %}")
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('total').innerText = data.total || 0;
+        document.getElementById('en_attente').innerText = data.en_attente || 0;
+        document.getElementById('resolues').innerText = data.resolues || 0;
+        document.getElementById('delai_moyen').innerText = (data.delai_moyen || 0) + ' j';
+
+        new Chart(document.getElementById('typeChart'), {
+            type: 'pie',
+            data: {
+                labels: data.types_labels,
+                datasets: [{
+                    data: data.types_data,
+                    backgroundColor: ['#0d6efd', '#0a58ca', '#4bc0c0', '#36a2eb', '#9966ff', '#ff9f40', '#ff6384'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('statutChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['En attente', 'Résolues'],
+                datasets: [{
+                    data: [data.en_attente, data.resolues],
+                    backgroundColor: ['#f59e0b', '#10b981'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutout: '60%',
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    })
+    .catch(error => console.error('Erreur chargement stats:', error));
+</script>
+{% endif %}
+
+<!-- Filtres (pour chefs service, directeurs, admin) -->
+{% if user.role == 'chef_service' or user.role == 'directeur' or user.is_superuser %}
+<div class="card filters-card mb-4">
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label fw-semibold"><i class="fas fa-filter me-1"></i> Statut</label>
+                <select id="statutFilter" class="form-select">
+                    <option value="tous">Tous les statuts</option>
+                    <option value="EN_ATTENTE">En attente</option>
+                    <option value="RESOLU">Résolu</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold"><i class="fas fa-search me-1"></i> Recherche</label>
+                <input type="text" id="searchInput" class="form-control" placeholder="Demandeur, type, description...">
+            </div>
+            <div class="col-md-3">
+                <div class="d-flex gap-2">
+                    <button id="filterBtn" class="btn btn-primary px-4">Filtrer</button>
+                    <button id="resetBtn" class="btn btn-secondary px-4">Réinitialiser</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Tableau des requêtes -->
+<div class="card table-card">
+    <div class="card-header">
+        <i class="fas fa-list me-2"></i>
+        {% if user.role == 'chef_division' %}
+            Requêtes attribuées à votre division
+        {% elif user.role == 'chef_service' %}
+            Requêtes de votre service
+        {% elif user.role == 'directeur' %}
+            Requêtes de votre direction
+        {% elif user.is_superuser %}
+            Toutes les requêtes
+        {% else %}
+            Vos requêtes
+        {% endif %}
+    </div>
+    <div class="card-body p-0">
+        <div id="requetesList">
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="mt-2 text-muted">Chargement des requêtes...</p>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-white border-top-0 pb-3">
+        <nav id="paginationNav" style="display: none;">
+            <ul class="pagination justify-content-center" id="paginationList"></ul>
+        </nav>
+    </div>
+</div>
+
+<script>
+console.log("=== Tableau de bord chargé ===");
+
+let currentPage = 1;
+let currentStatut = 'tous';
+let currentSearch = '';
+let totalPages = 1;
+
+function loadRequetes() {
+    document.getElementById('requetesList').innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div><p class="mt-2 text-muted">Chargement des requêtes...</p></div>';
+    
+    let url = `/requetes/api/accueil/?page=${currentPage}&per_page=10&statut=${currentStatut}`;
+    if (currentSearch) {
+        url += `&search=${encodeURIComponent(currentSearch)}`;
+    }
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById('requetesList').innerHTML = `<div class="alert alert-danger m-3">${data.error}</div>`;
+                return;
+            }
+            
+            if (!data.requetes || data.requetes.length === 0) {
+                document.getElementById('requetesList').innerHTML = '<div class="alert alert-info text-center m-3">Aucune requête trouvée.</div>';
+                document.getElementById('paginationNav').style.display = 'none';
+                return;
+            }
+            
+            totalPages = data.total_pages;
+            
+            let html = '<div class="table-responsive">';
+            html += '<table class="table table-hover mb-0">';
+            html += '<thead>';
+            html += '<tr>';
+            html += '<th>N°</th>';
+            html += '<th>Date</th>';
+            html += '<th>Heure</th>';
+            html += '<th>Statut requête</th>';
+            html += '<th>Statut compte rendu</th>';
+            html += '<th>Actions</th>';
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+            
+            for (let i = 0; i < data.requetes.length; i++) {
+                const req = data.requetes[i];
+                const statutClass = req.statut_code === 'EN_ATTENTE' ? 'bg-warning text-dark' : 'bg-success';
+                const statutIcon = req.statut_code === 'EN_ATTENTE' ? '<i class="fas fa-clock"></i>' : '<i class="fas fa-check-circle"></i>';
+                
+                const dateTime = req.date_creation.split(' ');
+                const date = dateTime[0];
+                const time = dateTime[1] || '';
+                
+                let crClass = '';
+                let crIcon = '';
+                let crText = '';
+                if (req.statut_compte_rendu_code === 'AUCUN') {
+                    crClass = 'bg-secondary';
+                    crIcon = '<i class="fas fa-hourglass-start"></i>';
+                    crText = 'Aucun';
+                } else if (req.statut_compte_rendu_code === 'EN_COURS') {
+                    crClass = 'bg-info text-dark';
+                    crIcon = '<i class="fas fa-pen"></i>';
+                    crText = 'En cours';
+                } else if (req.statut_compte_rendu_code === 'MODIFIE') {
+                    crClass = 'bg-warning text-dark';
+                    crIcon = '<i class="fas fa-edit"></i>';
+                    crText = 'Modifié';
+                } else {
+                    crClass = 'bg-success';
+                    crIcon = '<i class="fas fa-check-double"></i>';
+                    crText = 'Résolu';
+                }
+                
+                html += '<tr>';
+                html += `<td><strong>#${req.id}</strong></td>`;
+                html += `<td>${date}</td>`;
+                html += `<td>${time}</td>`;
+                html += `<td><span class="badge ${statutClass}">${statutIcon} ${req.statut}</span></td>`;
+                html += `<td><span class="badge ${crClass}">${crIcon} ${crText}</span></td>`;
+                html += `<td><a href="${req.url}" class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i> Voir</a></td>`;
+                html += '</tr>';
+            }
+            
+            html += '</tbody>';
+            html += '</table>';
+            html += '</div>';
+            document.getElementById('requetesList').innerHTML = html;
+            
+            // Pagination
+            if (data.total_pages > 1) {
+                let pagHtml = '';
+                if (data.current_page > 1) {
+                    pagHtml += `<li class="page-item"><a class="page-link" href="#" data-page="${data.current_page - 1}">«</a></li>`;
+                } else {
+                    pagHtml += '<li class="page-item disabled"><span class="page-link">«</span></li>';
+                }
+                for (let i = 1; i <= data.total_pages; i++) {
+                    if (i === data.current_page) {
+                        pagHtml += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+                    } else {
+                        pagHtml += `<li class="page-item"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+                    }
+                }
+                if (data.current_page < data.total_pages) {
+                    pagHtml += `<li class="page-item"><a class="page-link" href="#" data-page="${data.current_page + 1}">»</a></li>`;
+                } else {
+                    pagHtml += '<li class="page-item disabled"><span class="page-link">»</span></li>';
+                }
+                document.getElementById('paginationList').innerHTML = pagHtml;
+                document.getElementById('paginationNav').style.display = 'block';
+                
+                document.querySelectorAll('#paginationList .page-link').forEach(link => {
+                    const page = link.getAttribute('data-page');
+                    if (page) {
+                        link.onclick = function(e) {
+                            e.preventDefault();
+                            const newPage = parseInt(page);
+                            if (newPage && newPage !== currentPage) {
+                                currentPage = newPage;
+                                loadRequetes();
+                            }
+                        };
+                    }
+                });
+            } else {
+                document.getElementById('paginationNav').style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Erreur fetch:', error);
+            document.getElementById('requetesList').innerHTML = `<div class="alert alert-danger m-3">Erreur: ${error.message}</div>`;
+        });
+}
+
+function resetFilters() {
+    document.getElementById('statutFilter').value = 'tous';
+    document.getElementById('searchInput').value = '';
+    currentStatut = 'tous';
+    currentSearch = '';
+    currentPage = 1;
+    loadRequetes();
+}
+
+function applyFilters() {
+    currentStatut = document.getElementById('statutFilter').value;
+    currentSearch = document.getElementById('searchInput').value;
+    currentPage = 1;
+    loadRequetes();
+}
+
+// Événements
+const filterBtn = document.getElementById('filterBtn');
+const resetBtn = document.getElementById('resetBtn');
+if (filterBtn) filterBtn.onclick = applyFilters;
+if (resetBtn) resetBtn.onclick = resetFilters;
+
+let searchTimeout;
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+    searchInput.onkeyup = function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(applyFilters, 500);
+    };
+}
+
+// Chargement initial
+loadRequetes();
+</script>
+{% endblock %}

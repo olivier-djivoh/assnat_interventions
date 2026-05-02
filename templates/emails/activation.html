@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activation de votre compte - Assemblée Nationale</title>
+</head>
+<body style="margin:0; padding:0; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color:#f0f4f8;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f0f4f8" style="background-color:#f0f4f8; width:100%;">
+        <tr>
+            <td align="center" style="padding:40px 20px;">
+                <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px; width:100%; background-color:#ffffff; border-radius:24px; box-shadow:0 20px 35px -10px rgba(0,0,0,0.1); overflow:hidden;">
+                    
+                    <!-- En-tête avec logo et dégradé -->
+                    <tr>
+                        <td bgcolor="#0f2b3d" style="background: linear-gradient(135deg, #0f2b3d 0%, #1c4e6f 100%); padding: 35px 30px; text-align:center;">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td align="center" style="padding-bottom: 15px;">
+                                        <div style="width:70px; height:70px; margin:0 auto; background-color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.15); overflow:hidden;">
+                                            <img src="https://res.cloudinary.com/dgdelclgo/image/upload/v1776801942/an_ubgdrc.png" alt="Logo Assemblée nationale" style="width:70px; height:70px; border-radius:50%; object-fit:cover;">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <h1 style="color:#ffffff; margin:0; font-size:28px; font-weight:700; letter-spacing:-0.3px;">Assemblée nationale</h1>
+                                        <p style="color:rgba(255,255,255,0.85); margin:10px 0 0; font-size:15px; font-weight:400;">Plateforme de Gestion des Interventions</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Corps du message -->
+                    <tr>
+                        <td style="padding:35px 30px;">
+                            <h2 style="color:#1e293b; font-size:22px; font-weight:600; margin:0 0 20px 0;">Bonjour {{ user.get_full_name|default:user.username }},</h2>
+                            
+                            <p style="color:#334155; font-size:16px; line-height:1.6; margin:0 0 15px 0;">
+                                Votre compte a été <strong style="color:#1c4e6f;">validé avec succès</strong> par l'administrateur.
+                            </p>
+                            
+                            <p style="color:#334155; font-size:16px; line-height:1.6; margin:0 0 25px 0;">
+                                Pour finaliser votre inscription et définir votre mot de passe, veuillez cliquer sur le bouton ci-dessous :
+                            </p>
+                            
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td align="center" style="padding:15px 0 25px 0;">
+                                        <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+                                            <tr>
+                                                <td bgcolor="#1c4e6f" style="background: linear-gradient(135deg, #0f2b3d, #1c4e6f); border-radius:50px; box-shadow:0 8px 18px rgba(28,78,111,0.2);">
+                                                    <a href="{{ lien }}" style="display:inline-block; background: linear-gradient(135deg, #0f2b3d, #1c4e6f); color:#ffffff; padding:14px 32px; text-decoration:none; border-radius:50px; font-size:16px; font-weight:600; letter-spacing:0.5px;">
+                                                        🔐 Activer mon compte
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <div style="background-color:#f8fafc; border-radius:16px; padding:20px; margin:15px 0 10px; border-left:4px solid #1c4e6f;">
+                                <p style="color:#475569; font-size:13px; margin:0 0 8px; font-weight:600;">Lien direct (copiez-le dans votre navigateur) :</p>
+                                <p style="color:#0d6efd; font-size:13px; word-break:break-all; margin:0; font-family:monospace;">
+                                    {{ lien }}
+                                </p>
+                            </div>
+                            
+                            <p style="color:#64748b; font-size:14px; line-height:1.5; margin:25px 0 0 0; border-top:1px solid #e2e8f0; padding-top:20px;">
+                                Ce lien est valable 3 jours. Si vous n'avez pas demandé cette activation, ignorez cet email.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Pied de page -->
+                    <tr>
+                        <td bgcolor="#f8fafc" style="background-color:#f8fafc; padding:25px 30px; border-top:1px solid #e2e8f0; text-align:center;">
+                            <p style="margin:0 0 8px; color:#5a6e7c; font-size:13px;">
+                                <span style="font-weight:600;">Assemblée nationale — République du Bénin</span>
+                            </p>
+                            <p style="margin:0; color:#94a3b8; font-size:12px;">
+                                Cet email est automatique, merci de ne pas y répondre.
+                            </p>
+                            <p style="margin:15px 0 0; color:#94a3b8; font-size:11px;">
+                                © 2026 — Plateforme de Gestion des Interventions
+                            </p>
+                        </td>
+                    </tr>
+                
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

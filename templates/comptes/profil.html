@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Cartes statistiques */
+    .stats-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        flex: 1;
+        min-width: 180px;
+        background: white;
+        border-radius: 20px;
+        padding: 1.2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border-left: 4px solid;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+    }
+
+    .stat-card .stat-icon {
+        position: absolute;
+        right: 15px;
+        bottom: 10px;
+        font-size: 2.5rem;
+        opacity: 0.15;
+    }
+
+    .stat-card .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-card .stat-label {
+        color: #64748b;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .stat-card.requetes { border-left-color: #0d6efd; }
+    .stat-card.requetes .stat-number { color: #0d6efd; }
+    .stat-card.attribuees { border-left-color: #10b981; }
+    .stat-card.attribuees .stat-number { color: #10b981; }
+    .stat-card.membre { border-left-color: #06b6d4; }
+    .stat-card.membre .stat-number { color: #06b6d4; font-size: 1.2rem; font-weight: 600; }
+
+    /* Carte principale */
+    .profile-card {
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .profile-card .card-header {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        color: white;
+        padding: 1.3rem 1.8rem;
+        border-bottom: none;
+    }
+
+    .profile-card .card-header h4 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .profile-card .card-body {
+        padding: 2rem;
+    }
+
+    /* Formulaires */
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 500;
+        font-size: 0.8rem;
+        color: #1e293b;
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .form-control, input[readonly] {
+        width: 100%;
+        padding: 0.6rem 0.9rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        transition: 0.2s;
+        background-color: #ffffff;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+    }
+
+    input[readonly] {
+        background-color: #f8fafc;
+        color: #475569;
+        cursor: not-allowed;
+    }
+
+    /* Boutons */
+    .btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        border-radius: 40px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        color: white;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(16,185,129,0.3);
+    }
+
+    .btn-secondary {
+        background-color: #e2e8f0;
+        border: none;
+        color: #1e293b;
+        border-radius: 40px;
+        padding: 0.5rem 1.5rem;
+        transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #cbd5e1;
+        transform: translateY(-2px);
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        border: none;
+        border-radius: 40px;
+        padding: 0.5rem 1.5rem;
+        color: white;
+        transition: all 0.3s;
+    }
+
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(245,158,11,0.3);
+    }
+
+    .btn-info {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        border: none;
+        border-radius: 40px;
+        padding: 0.5rem 1.5rem;
+        color: white;
+        transition: all 0.3s;
+    }
+
+    .btn-info:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(6,182,212,0.3);
+    }
+
+    /* ===== RESPONSIVE MOBILE ===== */
+    @media (max-width: 768px) {
+        /* Cartes statistiques en colonne */
+        .stats-row {
+            flex-direction: column;
+        }
+        .stat-card {
+            width: 100%;
+        }
+        /* Réduction du padding de la carte */
+        .profile-card .card-body {
+            padding: 1.5rem;
+        }
+        /* Les champs passent en pleine largeur (Bootstrap gère déjà col-12) */
+        /* Boutons : empilement et pleine largeur */
+        .d-flex {
+            flex-direction: column !important;
+            gap: 0.75rem !important;
+        }
+        .d-flex div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
+        /* Ajustement des groupes de boutons */
+        .btn-warning, .btn-info {
+            margin-left: 0 !important;
+        }
+        /* Correction de l'affichage des champs en lecture seule */
+        input[readonly] {
+            font-size: 0.85rem;
+        }
+    }
+
+    /* Pour les écrans très petits (moins de 480px) */
+    @media (max-width: 480px) {
+        .form-label {
+            font-size: 0.7rem;
+        }
+        .form-control {
+            font-size: 0.8rem;
+            padding: 0.5rem 0.7rem;
+        }
+        .stat-card .stat-number {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+        <!-- Cartes statistiques -->
+        <div class="stats-row">
+            <div class="stat-card requetes">
+                <div class="stat-number">{{ nb_requetes_crees }}</div>
+                <div class="stat-label"><i class="fas fa-clipboard-list me-1"></i> Requêtes créées</div>
+                <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
+            </div>
+            {% if nb_requetes_attribuees is not None %}
+            <div class="stat-card attribuees">
+                <div class="stat-number">{{ nb_requetes_attribuees }}</div>
+                <div class="stat-label"><i class="fas fa-tasks me-1"></i> Requêtes attribuées</div>
+                <div class="stat-icon"><i class="fas fa-tasks"></i></div>
+            </div>
+            {% endif %}
+            <div class="stat-card membre">
+                <div class="stat-number">{{ membre_depuis }}</div>
+                <div class="stat-label"><i class="fas fa-calendar-alt me-1"></i> Membre depuis</div>
+                <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+            </div>
+        </div>
+
+        <!-- Formulaire de modification -->
+        <div class="card profile-card">
+            <div class="card-header">
+                <h4><i class="fas fa-id-card me-2"></i> Mon profil</h4>
+                <p class="text-white-50 mb-0 small">Modifiez vos informations personnelles</p>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Prénom <span class="text-danger">*</span></label>
+                                {{ form.first_name }}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Nom <span class="text-danger">*</span></label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Email <span class="text-danger">*</span></label>
+                                {{ form.email }}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Téléphone</label>
+                                {{ form.contact }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informations institutionnelles (lecture seule) -->
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Direction</label>
+                                <input type="text" class="form-control" value="{{ user.direction.nom|default:'-' }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Service</label>
+                                <input type="text" class="form-control" value="{{ user.service.nom|default:'-' }}" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Division</label>
+                                <input type="text" class="form-control" value="{{ user.division.nom|default:'-' }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Rôle</label>
+                                <input type="text" class="form-control" value="{{ role_display }}" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i> Enregistrer
+                            </button>
+                            <a href="{% url 'accueil' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Retour
+                            </a>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="{% url 'changer_mdp' %}" class="btn btn-warning">
+                                <i class="fas fa-key me-2"></i> Changer mon mot de passe
+                            </a>
+                            <a href="{% url 'notification_prefs' %}" class="btn btn-info">
+                                <i class="fas fa-bell me-2"></i> Préférences de notifications
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
