@@ -1,15 +1,11 @@
-"""
-Django settings for assnat_interventions project.
-"""
-
 import os
 from pathlib import Path
-from decouple import config
-import dj_database_url
+from decouple import config  # pip install python-decouple
+import dj_database_url    # pip install dj-database-url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# === SÉCURITÉ et CONFIGURATION GÉNÉRALE ===
+# === SÉCURITÉ ===
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
@@ -22,7 +18,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Apps du projet
     'comptes',
     'requetes',
     'journal',
@@ -62,7 +57,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'assnat_interventions.wsgi.application'
 
 # === BASE DE DONNÉES ===
-# Soit on utilise une URL complète (DATABASE_URL) soit on construit manuellement
 DATABASE_URL = config('DATABASE_URL', default=None)
 if DATABASE_URL:
     DATABASES = {
@@ -72,9 +66,9 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DATABASE_NAME'),
-            'USER': config('DATABASE_USER'),
-            'PASSWORD': config('DATABASE_PASSWORD'),
+            'NAME': config('DATABASE_NAME', default='assnat_db'),
+            'USER': config('DATABASE_USER', default='assnat_user'),
+            'PASSWORD': config('DATABASE_PASSWORD', default=''),
             'HOST': config('DATABASE_HOST', default='localhost'),
             'PORT': config('DATABASE_PORT', default='5432'),
         }
@@ -96,10 +90,11 @@ USE_TZ = True
 # === FICHIERS STATIQUES ET MÉDIAS ===
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# === MODÈLE UTILISATEUR PERSONNALISÉ ===
+# === MODÈLE UTILISATEUR ===
 AUTH_USER_MODEL = 'comptes.Utilisateur'
 
 # === REDIRECTIONS ===
@@ -116,14 +111,10 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
-# === ANYMAIL (Brevo) ===
+# === ANYMAIL ===
 ANYMAIL = {
     "BREVO_API_KEY": config('BREVO_API_KEY'),
 }
-
-# === CHANNELS (WebSocket – commenté) ===
-# ASGI_APPLICATION = 'assnat_interventions.asgi.application'
-# CHANNEL_LAYERS = {...}
 
 # === SESSIONS ===
 SESSION_COOKIE_AGE = 1209600
