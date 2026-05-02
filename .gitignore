@@ -42,3 +42,4 @@ build/
 *.pyc
 *.pyo
 *.pyd
+*.sql
