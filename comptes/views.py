@@ -23,10 +23,9 @@ from requetes.models import Requete
 from django.utils import timezone  # ← IMPORT MANQUANT
 from validate_email import validate_email
 
-# ------------------------------
+
 # Vue de déconnexion
-# ------------------------------
-# comptes/views.py
+
 from django.contrib import messages
 
 def deconnexion_view(request):
@@ -38,9 +37,9 @@ def deconnexion_view(request):
     messages.success(request, "Vous avez été déconnecté avec succès.")
     return redirect('connexion')
 
-# ------------------------------
+
 # Inscription
-# ------------------------------
+
 class InscriptionView(UserPassesTestMixin, CreateView):
     model = Utilisateur
     form_class = InscriptionForm
@@ -71,9 +70,9 @@ class InscriptionDoneView(TemplateView):
         context['hide_sidebar'] = True
         return context
 
-# ------------------------------
+
 # Connexion
-# ------------------------------
+
 class ConnexionView(LoginView):
     template_name = 'comptes/connexion.html'
 
@@ -96,9 +95,8 @@ class ConnexionView(LoginView):
             
         return super().form_valid(form)
 
-# ------------------------------
 # Activation de compte
-# ------------------------------
+
 class ActivationForm(forms.Form):
     password1 = forms.CharField(label="Mot de passe", widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password2 = forms.CharField(label="Confirmation", widget=forms.PasswordInput(attrs={'class': 'form-control'}))
@@ -160,9 +158,9 @@ class ActivationView(View):
         else:
             return render(request, self.template_name, {'validlink': False})
 
-# ------------------------------
+
 # API pour listes déroulantes
-# ------------------------------
+
 def api_services(request):
     direction_id = request.GET.get('direction')
     if not direction_id:
@@ -177,9 +175,8 @@ def api_divisions(request):
     divisions = Division.objects.filter(service_id=service_id).values('id', 'nom')
     return JsonResponse(list(divisions), safe=False)
 
-# ------------------------------
 # Gestion des utilisateurs (admin)
-# ------------------------------
+
 @method_decorator(staff_member_required, name='dispatch')
 class GestionUtilisateursView(ListView):
     model = Utilisateur
@@ -308,9 +305,8 @@ class DetailUtilisateurView(DetailView):
     template_name = 'comptes/detail_utilisateur.html'
     context_object_name = 'user_detail'
 
-# ------------------------------
 # Profil utilisateur
-# ------------------------------
+
 class ProfilView(LoginRequiredMixin, UpdateView):
     model = Utilisateur
     fields = ['first_name', 'last_name', 'email', 'contact']
@@ -388,7 +384,7 @@ class NotificationPreferencesView(LoginRequiredMixin, FormView):
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
 from .models import Utilisateur
-from .forms import InscriptionForm  # Réutilisez votre formulaire d'inscription
+from .forms import InscriptionForm  
 
 class AjouterUtilisateurView(CreateView):
     model = Utilisateur

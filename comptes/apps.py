@@ -6,4 +6,4 @@ class ComptesConfig(AppConfig):
     name = 'comptes'
 
     def ready(self):
-        import comptes.signals  # ou from . import signals
+        import comptes.signals  

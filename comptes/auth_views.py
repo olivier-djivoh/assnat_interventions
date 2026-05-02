@@ -47,7 +47,7 @@ class CustomPasswordResetView(PasswordResetView):
         email = EmailMultiAlternatives(subject, body, from_email, [to_email])
         email.attach_alternative(html_body, "text/html")
         
-        # --- Attacher le logo en CID ---
+      
         # Chercher le fichier 'an.png' dans les dossiers static
         logo_path = finders.find('images/an.png')
         if not logo_path:

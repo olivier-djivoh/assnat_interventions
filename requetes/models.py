@@ -1,4 +1,4 @@
-# requetes/models.py
+
 
 from django.db import models
 from django.conf import settings
@@ -8,9 +8,9 @@ class TypeDemande(models.Model):
     """
     Catégorie de demande, associée au service qui doit la traiter (routage automatique).
     """
-    nom = models.CharField(max_length=100)                        # Ex: "Panne réseau"
+    nom = models.CharField(max_length=100)                        
     service_cible = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='types_demande')
-    description = models.TextField(blank=True)                    # Description optionnelle
+    description = models.TextField(blank=True)                
 
     class Meta:
         verbose_name = "Type de demande"

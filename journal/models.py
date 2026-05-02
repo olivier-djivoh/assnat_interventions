@@ -1,4 +1,4 @@
-# journal/models.py
+
 
 from django.db import models
 from django.conf import settings
@@ -9,11 +9,11 @@ class JournalAudit(models.Model):
     sur les modèles clés, pour traçabilité.
     """
     utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
-    action = models.CharField(max_length=50)                 # Ex: 'CREATION', 'MODIFICATION', 'ATTRIBUTION'
-    entite_type = models.CharField(max_length=50)            # Nom du modèle (ex: 'requete', 'utilisateur')
-    entite_id = models.IntegerField()                         # ID de l'enregistrement concerné
-    anciennes_valeurs = models.JSONField(null=True, blank=True)   # État avant modification (JSON)
-    nouvelles_valeurs = models.JSONField(null=True, blank=True)   # État après modification (JSON)
+    action = models.CharField(max_length=50)                 
+    entite_type = models.CharField(max_length=50)         
+    entite_id = models.IntegerField()                         
+    anciennes_valeurs = models.JSONField(null=True, blank=True)   
+    nouvelles_valeurs = models.JSONField(null=True, blank=True)   
     date_action = models.DateTimeField(auto_now_add=True)
     adresse_ip = models.GenericIPAddressField(null=True, blank=True)
 

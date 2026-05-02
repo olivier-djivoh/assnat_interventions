@@ -52,7 +52,7 @@ def validate_file_mime_type(value):
         if mime_type not in ALLOWED_MIME_TYPES:
             raise ValidationError(f"Type de fichier non autorisé.")
     except ImportError:
-        # Si python-magic n'est pas installé, on se contente de l'extension
+       
         pass
        
 class AttributionForm(forms.Form):
@@ -94,7 +94,7 @@ class CompteRenduForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Remplacer le widget CheckboxInput par des radios
+       
         self.fields['intervention_resolue'].widget = forms.RadioSelect(
             choices=[
                 (True, '✅ Oui, le problème est résolu'),
@@ -103,7 +103,7 @@ class CompteRenduForm(forms.ModelForm):
             attrs={'class': 'form-check-input'}
         )
 
-# requetes/views.py
+
 
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages

@@ -52,7 +52,7 @@ def valider_utilisateurs_action(self, request, queryset):
                 text_message,
                 settings.DEFAULT_FROM_EMAIL,
                 [user.email],
-                # metadata={"user_id": user.id},   ← à supprimer
+            
             )
             if html_message:
                 email.attach_alternative(html_message, "text/html")

@@ -1,4 +1,4 @@
-# requetes/apps.py
+
 from django.apps import AppConfig
 
 class RequetesConfig(AppConfig):
