@@ -6,7 +6,7 @@ import dj_database_url    # pip install dj-database-url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # === SÉCURITÉ ===
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-temp-key-pour-railway')
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
