@@ -1,1 +1,1 @@
-web: mkdir -p staticfiles && python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn assnat_interventions.wsgi:application --bind 0.0.0.0:$PORT
+web: python manage.py collectstatic --noinput && gunicorn assnat_interventions.wsgi:application --bind 0.0.0.0:$PORT
