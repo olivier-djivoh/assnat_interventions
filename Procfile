@@ -1,0 +1,1 @@
+web: python manage.py migrate --noinput && gunicorn assnat_interventions.wsgi:application --bind 0.0.0.0:$PORT
