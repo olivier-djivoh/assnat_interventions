@@ -129,3 +129,5 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 3 * 1024 * 1024
 
 # === CSRF ===
 CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='').split(',')
+ALLOWED_HOSTS = ['assnatinterventions-production.up.railway.app', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://assnatinterventions-production.up.railway.app']
