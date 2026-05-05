@@ -133,3 +133,10 @@ ALLOWED_HOSTS = ['assnatinterventions-production.up.railway.app', 'localhost', '
 CSRF_TRUSTED_ORIGINS = ['https://assnatinterventions-production.up.railway.app']
 
 
+ASGI_APPLICATION = 'assnat_interventions.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
