@@ -133,7 +133,3 @@ ALLOWED_HOSTS = ['assnatinterventions-production.up.railway.app', 'localhost', '
 CSRF_TRUSTED_ORIGINS = ['https://assnatinterventions-production.up.railway.app']
 
 
-# Désactiver l'envoi d'email réel sur Railway (évite les blocages)
-import sys
-if 'gunicorn' in sys.argv[0] or 'railway' in os.environ.get('RAILWAY_ENVIRONMENT', ''):
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
