@@ -131,3 +131,9 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 3 * 1024 * 1024
 CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='').split(',')
 ALLOWED_HOSTS = ['assnatinterventions-production.up.railway.app', 'localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://assnatinterventions-production.up.railway.app']
+
+
+# Désactiver l'envoi d'email réel sur Railway (évite les blocages)
+import sys
+if 'gunicorn' in sys.argv[0] or 'railway' in os.environ.get('RAILWAY_ENVIRONMENT', ''):
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
