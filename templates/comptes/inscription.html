@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
-{% load static compress %}
 {% load static %}
 
 {% block title %}Inscription - Assemblée Nationale{% endblock %}
 
 {% block extra_css %}
-{% compress js %}
 <style>
     /* ========== VARIABLES ========== */
     :root {
@@ -405,8 +403,6 @@
         }
     }
 </style>
-{% endcompress %}
-
 {% endblock %}
 
 {% block content %}
@@ -585,7 +581,6 @@
         </div>
     </div>
 </div>
-{% compress js %}
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -704,6 +699,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 </script>
-{% endcompress %}
 
 {% endblock %}
