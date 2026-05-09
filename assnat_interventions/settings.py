@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'journal',
     'channels',
     'anymail',
+    'compressor',
 ]
 
 MIDDLEWARE = [
@@ -140,3 +141,11 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+]
+
+COMPRESS_OFFLINE = True
