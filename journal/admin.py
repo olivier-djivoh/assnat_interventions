@@ -1,6 +1,18 @@
 from django.contrib import admin
 from .models import JournalAudit
 
+
+ACTION_LABELS = {
+    1: "créé",
+    2: "modifié",
+    3: "supprimé",
+    'CREATION': "créé",
+    'MODIFICATION': "modifié",
+    'SUPPRESSION': "supprimé",
+    'CONNEXION': "s'est connecté(e)",
+    'DECONNEXION': "s'est déconnecté(e)",
+}
+
 @admin.register(JournalAudit)
 class JournalAuditAdmin(admin.ModelAdmin):
     list_display = ('date_action', 'message_audit', 'utilisateur', 'adresse_ip')
@@ -42,31 +54,33 @@ class JournalAuditAdmin(admin.ModelAdmin):
             affichage_user = "Système"
 
         date_str = obj.date_action.strftime("%d/%m/%Y à %H:%M:%S")
+        ip_info = f" depuis l'IP {obj.adresse_ip}" if obj.adresse_ip else ""
 
-        # Actions spécifiques (connexion, déconnexion)
-        if obj.action == 'CONNEXION':
-            return f"{affichage_user} s'est connecté(e) le {date_str} depuis l'IP {obj.adresse_ip or 'inconnue'}."
-        if obj.action == 'DECONNEXION':
-            return f"{affichage_user} s'est déconnecté(e) le {date_str}."
-
-        # Actions CRUD
-        if obj.action == 'CREATION':
-            verbe = "a créé"
-        elif obj.action == 'MODIFICATION':
-            verbe = "a modifié"
-        elif obj.action == 'SUPPRESSION':
-            verbe = "a supprimé"
+        # Traduction de l'action (gère les codes numériques et les chaînes)
+        action_value = obj.action
+        if isinstance(action_value, int) or action_value.isdigit():
+            action_code = int(action_value)
         else:
-            verbe = f"a effectué l'action '{obj.action}'"
+            action_code = action_value
 
+        action_label = ACTION_LABELS.get(action_code, action_value)
+
+        # Cas particuliers : connexion / déconnexion
+        if action_code in ('CONNEXION', 4) or (isinstance(action_code, int) and action_code == 4):
+            return f"{affichage_user} s'est connecté(e) le {date_str}{ip_info}."
+        if action_code in ('DECONNEXION', 5) or (isinstance(action_code, int) and action_code == 5):
+            return f"{affichage_user} s'est déconnecté(e) le {date_str}{ip_info}."
+
+        # Type d'entité
         entite_fr = {
             'utilisateur': "l'utilisateur",
             'requete': "la requête",
             'attribution': "l'attribution",
             'compte_rendu': "le compte rendu",
-            'authentification': "l'événement de connexion",
+            'authentification': "l'événement",
         }.get(obj.entite_type, f"l'entité '{obj.entite_type}'")
 
+        # Récupération d'un libellé
         libelle = ""
         if obj.entite_type == 'requete' and obj.nouvelles_valeurs:
             titre = obj.nouvelles_valeurs.get('titre')
@@ -89,12 +103,11 @@ class JournalAuditAdmin(admin.ModelAdmin):
                 pass
 
         id_entite = f" #{obj.entite_id}" if obj.entite_id else ""
-        details = ""
-        if obj.action == 'MODIFICATION' and obj.nouvelles_valeurs and obj.anciennes_valeurs:
-            champs_modifies = set(obj.nouvelles_valeurs.keys()) & set(obj.anciennes_valeurs.keys())
-            if champs_modifies:
-                details = f" (champs modifiés : {', '.join(champs_modifies)})"
 
-        return f"{affichage_user} {verbe} {entite_fr}{id_entite}{libelle} le {date_str}{details}."
+        # Construction de la phrase
+        if action_label in ("créé", "modifié", "supprimé"):
+            return f"{affichage_user} a {action_label} {entite_fr}{id_entite}{libelle} le {date_str}{ip_info}."
+        else:
+            return f"{affichage_user} a effectué l'action '{action_label}' sur {entite_fr}{id_entite}{libelle} le {date_str}{ip_info}."
 
     message_audit.short_description = "Action détaillée"
