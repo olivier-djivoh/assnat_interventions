@@ -111,3 +111,4 @@ class JournalAuditAdmin(admin.ModelAdmin):
             return f"{affichage_user} a effectué l'action '{action_label}' sur {entite_fr}{id_entite}{libelle} le {date_str}{ip_info}."
 
     message_audit.short_description = "Action détaillée"
+    
